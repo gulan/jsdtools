@@ -1,0 +1,3 @@
+(seq reader [
+    (lit subscribe)
+    (rep reader-body (lit enter))])

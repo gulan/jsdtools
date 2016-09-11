@@ -1,0 +1,6 @@
+(rep customer
+    (alt customer-action [
+        (lit invest)
+        (lit pay-in)
+        (lit withdraw)
+        (lit terminate)]))

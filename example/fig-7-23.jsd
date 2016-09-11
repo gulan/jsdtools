@@ -1,0 +1,6 @@
+(seq book [
+    (lit buy)
+    (rep book-body 
+        (alt event [
+            (lit use)
+            (lit bind)]))])

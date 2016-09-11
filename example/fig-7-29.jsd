@@ -1,0 +1,12 @@
+(seq soldier-promotion-career [
+    (lit enlist-private)
+    (alt possible-promotion [
+        (seq higher-rank [
+            (lit promote-acting-captain)
+            (lit promote-substant-captain)
+            (alt possible-promotion [
+                (seq top-rank [
+                    (lit promote-acting-general)
+                    (lit promote-substant-general)])
+                (lit -)])])
+        (lit -)])])

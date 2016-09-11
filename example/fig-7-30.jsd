@@ -1,0 +1,9 @@
+(rep soldier-career-training 
+    (seq cource<c> [
+        (lit enrol<c>)
+        (lit complere<c>)
+        (alt possible-repeat<c> [
+            (seq repeat<c> [
+                (lit re-enrol<c>)
+                (lit complete<c>)])
+            (lit -)])]))

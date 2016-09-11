@@ -1,0 +1,9 @@
+(seq book [
+    (lit buy)
+    (rep book-body 
+        (alt event-group [
+            (lit use) 
+            (seq bind-group [
+                (lit bind)
+                (rep unnecessary-bind-group 
+                    (lit bind'))])]))])
