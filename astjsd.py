@@ -228,7 +228,7 @@ def alt():
     return w
 
 def g():
-    assert TOK == '('
+    assert TOK == '(', repr(TOK)
     get()
     if TOK == 'rep':
         get()
@@ -274,12 +274,14 @@ if __name__ == '__main__':
     inp = ''.join(m for m in sys.stdin.readlines() if not m.startswith('#'))
     S = scan(inp)
     get()
-    w = g()
-    print '/* {} */'.format(repr(w))
-    print
-    for i in mkdot(w):
-        print i,
-    print
+    while TOK != '$':
+        w = g()
+        print '/* {} */'.format(repr(w))
+        print
+        for i in mkdot(w):
+            print i,
+        print
+        get()
 
 if 0:
     S = scan('(lit hello)')
