@@ -38,6 +38,13 @@ KEYWORD = ['rep','seq','alt','lit']
 
 TOK = None # global variable
 
+def mkseqno():
+    n = 1000
+    while 1:
+        yield n
+        n += 1
+seqno = mkseqno()
+
 def scan(inp):
     S = iter(runlen.runlen(inp.replace('\n',' ') + '$'))
     t = S.next()
@@ -71,6 +78,7 @@ class Lit(object):
     def __init__(self):
         self.child = None
         self.literal = None
+        self.sn = seqno.next()
     def set_label(self, literal):
         self.literal = literal
     def __repr__(self):
@@ -78,7 +86,7 @@ class Lit(object):
     def graph(self):
         return []
     def labels(self):
-        return [(id(self), self.literal)]
+        return [(self.sn, self.literal)]
     def anno(self):
         return []
 
@@ -86,6 +94,7 @@ class Rep(object):
     def __init__(self):
         self.label = None
         self.child = []
+        self.sn = seqno.next()
     def set_label(self, label):
         self.label = label
     def add_child(self, other):
@@ -98,7 +107,7 @@ class Rep(object):
         for c in self.child:
             g = c.graph()
             r += g
-            n = (id(self), id(c))
+            n = (self.sn, c.sn)
             r.append(n)
         return r
     def labels(self):
@@ -106,14 +115,14 @@ class Rep(object):
         for c in self.child:
             g = c.labels()
             r += g
-        r.append((id(self), self.label))
+        r.append((self.sn, self.label))
         return r
     def anno(self):
         r = []
         for c in self.child:
             g = c.anno()
             r += g
-            n = (id(c), 'rep')
+            n = (c.sn, 'rep')
             r.append(n)
         return r
 
@@ -121,6 +130,7 @@ class Seq(object):
     def __init__(self):
         self.label = None
         self.child = []
+        self.sn = seqno.next()
     def set_label(self, label):
         self.label = label
     def add_child(self, other):
@@ -133,7 +143,7 @@ class Seq(object):
         for c in self.child:
             g = c.graph()
             r += g
-            n = (id(self), id(c))
+            n = (self.sn, c.sn)
             r.append(n)
         return r
     def labels(self):
@@ -141,14 +151,14 @@ class Seq(object):
         for c in self.child:
             g = c.labels()
             r += g
-        r.append((id(self), self.label))
+        r.append((self.sn, self.label))
         return r
     def anno(self):
         r = []
         for c in self.child:
             g = c.anno()
             r += g
-            n = (id(c), 'seq')
+            n = (c.sn, 'seq')
             r.append(n)
         return r
 
@@ -156,6 +166,7 @@ class Alt(object):
     def __init__(self):
         self.label = None
         self.child = []
+        self.sn = seqno.next()
     def set_label(self, label):
         self.label = label
     def add_child(self, other):
@@ -168,7 +179,7 @@ class Alt(object):
         for c in self.child:
             g = c.graph()
             r += g
-            n = (id(self), id(c))
+            n = (self.sn, c.sn)
             r.append(n)
         return r
     def labels(self):
@@ -176,14 +187,14 @@ class Alt(object):
         for c in self.child:
             g = c.labels()
             r += g
-        r.append((id(self), self.label))
+        r.append((self.sn, self.label))
         return r
     def anno(self):
         r = []
         for c in self.child:
             g = c.anno()
             r += g
-            n = (id(c), 'alt')
+            n = (c.sn, 'alt')
             r.append(n)
         return r
 
@@ -245,104 +256,53 @@ def g():
     expect(')')
     return w
 
-def mkdot(struct):
-    g = struct.graph()
-    n = struct.labels()
-    a = dict(struct.anno())
-    yield 'digraph fig7 {\n'
-    yield '  node [shape=rect]\n'
-    yield '  edge [dir=none]\n'
-    yield '  subgraph compound1 {\n'
-    for (id, label) in n:
+def mkdot(target):
+    target.send('digraph fig7 {\n')
+    target.send('  node [shape=rect]\n')
+    target.send('  edge [dir=none]\n')
+    c = 1
+    while 1:
         try:
-            kind = a[id]
-        except KeyError:
-            kind = 'root'
-        if kind == 'rep':
-            label = '*\\r' + label
-        elif kind == 'alt':
-            label = 'o\\r' + label
-        yield '    {} [label="{}"]\n'.format(id, label)
-    for (parent, child) in g:
-        yield '    {} -> {}\n'.format(parent, child)
-    yield '  }\n'
-    yield '}\n'
+            struct = (yield)
+        except GeneratorExit:
+            break
+        g = struct.graph()
+        n = struct.labels()
+        a = dict(struct.anno())
+        # prefix 'cluster' alters layout behavior: do not remove
+        target.send('  subgraph cluster_compound%s {\n' % c)
+        c += 1
+        for (id, label) in n:
+            try:
+                kind = a[id]
+            except KeyError:
+                kind = 'root'
+            if kind == 'rep':
+                label = '*\\r' + label
+            elif kind == 'alt':
+                label = 'o\\r' + label
+            target.send('    {} [label="{}"]\n'.format(id, label))
+        for (parent, child) in g:
+            target.send('    {} -> {}\n'.format(parent, child))
+        target.send('  }\n')
+    target.send('}\n')
+
+def mkprinter():
+    while 1:
+        print (yield),
 
 if __name__ == '__main__':
     # cat customer.jsd |python astjsd.py |dot -T pdf >xxx.pdf ; evince xxx.pdf
-    
+    printer = mkprinter()
+    printer.next()
+    dot = mkdot(printer)
+    dot.next()
     inp = ''.join(m for m in sys.stdin.readlines() if not m.startswith('#'))
     S = scan(inp)
     get()
     while TOK != '$':
         w = g()
-        print '/* {} */'.format(repr(w))
-        print
-        for i in mkdot(w):
-            print i,
-        print
+        dot.send(w)
         get()
+    dot.close()
 
-if 0:
-    S = scan('(lit hello)')
-    get(); w = g(); print w; print w.labels()
-    S = scan('(seq abc [(lit hello)])')
-    get(); w = g(); print w; print w.labels()
-    S = scan('(seq abc [(lit hello) (lit goodbye)])')
-    get(); w = g(); print w; print w.labels()
-    S = scan('(seq abc [(lit hello) (seq def [(lit 1a) (lit 2a)]) (lit goodbye)])')
-    get(); w = g(); print w; print w.labels()
-    S = scan('(alt fruit [(lit apple) (lit banana) (lit cherry)])')
-    get(); w = g(); print w; print w.labels()
-
-if 0:
-    D = '(lit D)'
-    E = '(lit E)'
-    F = '(lit F)'
-    G = '(lit G)'
-    B = '(seq B [{D} {E}])'.format(D=D, E=E)
-    C = '(seq C [{F} {G}])'.format(F=F, G=G)
-    A = '(seq A [{B} {C}])'.format(B=B, C=C)
-
-if 0:
-    S = scan(f1)
-    get(); w = g(); print w
-    print
-    for i in mkdot(w):
-        print i,
-    print
-
-if 0:
-    print A
-    S = scan(A)
-    get(); w = g(); print w; print w.labels()
-    S = scan(A)
-    get(); w = g(); print w; print w.graph()
-
-if 0:
-    S = scan('(lit hello)')
-    get(); w = g(); print w.graph()
-    S = scan('(seq abc [(lit hello)])')
-    get(); w = g(); print w.graph()
-    S = scan('(seq abc [(lit hello) (lit goodbye)])')
-    get(); w = g(); print w.graph()
-    S = scan('(seq abc [(lit hello) (seq def [(lit 1a) (lit 2a)]) (lit goodbye)])')
-    get(); w = g(); print w; print w.graph()
-    S = scan('(alt fruit [(lit apple) (lit banana) (lit cherry)])')
-    get(); w = g(); print w; print w.graph()
-
-if 0:
-    S = scan('(lit hello)')
-    get(); w = g(); print w
-    S = scan('(seq abc [(lit hello)])')
-    get(); w = g(); print w
-    S = scan('(seq abc [(lit hello) (lit goodbye)])')
-    get(); w = g(); print w
-    S = scan('(seq abc [(lit hello) (seq def [(lit 1a) (lit 2a)]) (lit goodbye)])')
-    get(); w = g(); print w
-    print '- '* 10
-    S = scan('(alt fruit [(lit apple) (lit banana) (lit cherry)])')
-    get(); w = g(); print w
-    S = scan('(rep abc (lit hello))')
-    get(); w = g(); print w
-    print 'ok'
