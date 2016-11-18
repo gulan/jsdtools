@@ -1,0 +1,7 @@
+(seq account [
+    (lit invest)
+    (rep account-body
+        (alt movement [
+            (lit pay-in)
+            (lit withdraw)]))
+    (lit terminate)])

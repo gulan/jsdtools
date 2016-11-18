@@ -1,7 +1,7 @@
 (rep soldier-career-training 
     (seq cource<c> [
         (lit enrol<c>)
-        (lit complere<c>)
+        (lit complete<c>)
         (alt possible-repeat<c> [
             (seq repeat<c> [
                 (lit re-enrol<c>)

@@ -2,7 +2,7 @@
 Narative Specifcation
 --------------------
 An input string has runs of 1+ spaces between words (1+
-non-space). The output is like the input except that evry run of
+non-space). The output is like the input except that every run of
 spaces is replaced by a single space.
 
 Formal
@@ -54,8 +54,8 @@ reduces to space*.
     input'' = letter* . (space+ . letter+)* . space*
 
 There is a recognition problem with space: we cannot tell which
-instance it is until we passed it. To help with this problem, first
-make the end of the input an explict token.
+instance it is until we have passed it. To help with this problem,
+first make the end of the input an explict token.
 
     input''' = letter* . (S1 . letter+)* . S2 . eof
     S1 = space+

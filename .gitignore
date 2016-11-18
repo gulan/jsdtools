@@ -1,0 +1,12 @@
+*.gdg
+*.o
+*.prof
+*.pyc
+*~
+.virtualenv
+build
+dist
+my_*
+2/
+*.egg-info/
+

@@ -34,7 +34,7 @@ import sys
 
 SPACE = ' '
 SYM = list(iter('()[]'))
-KEYWORD = ['rep','seq','alt','lit']
+# KEYWORD = ['rep','seq','alt','lit']
 
 TOK = None # global variable
 
@@ -81,14 +81,10 @@ class Lit(object):
         self.sn = seqno.next()
     def set_label(self, literal):
         self.literal = literal
-    def __repr__(self):
-        return '(lit {})'.format(self.literal)
-    def graph(self):
-        return []
-    def labels(self):
-        return [(self.sn, self.literal)]
-    def anno(self):
-        return []
+    def __repr__(self): return '(lit {})'.format(self.literal)
+    def graph(self): return []
+    def labels(self): return [(self.sn, self.literal)]
+    def anno(self): return []
 
 class Rep(object):
     def __init__(self):
@@ -291,13 +287,15 @@ def mkprinter():
     while 1:
         print (yield),
 
+def clean_input(fh):
+    return ''.join(m for m in fh.readlines() if not m.startswith('#'))
+
 if __name__ == '__main__':
-    # cat customer.jsd |python astjsd.py |dot -T pdf >xxx.pdf ; evince xxx.pdf
     printer = mkprinter()
     printer.next()
     dot = mkdot(printer)
     dot.next()
-    inp = ''.join(m for m in sys.stdin.readlines() if not m.startswith('#'))
+    inp = clean_input(sys.stdin)
     S = scan(inp)
     get()
     while TOK != '$':
@@ -305,4 +303,7 @@ if __name__ == '__main__':
         dot.send(w)
         get()
     dot.close()
+
+# cat example/account.jsd |./astjsd.py |dot -T pdf >xxx.pdf ; evince xxx.pdf
+
 
