@@ -29,7 +29,6 @@ lit = 'lit' . LITERAL'
 
 import re
 import StringIO
-import runlen
 import sys
 
 SPACE = ' '
@@ -45,8 +44,13 @@ def mkseqno():
         n += 1
 seqno = mkseqno()
 
+def squeeze_blanks(s):
+    pattern = r'[ ]+'
+    replacement = ' '
+    return re.sub(pattern, replacement, s)
+
 def scan(inp):
-    S = iter(runlen.runlen(inp.replace('\n',' ') + '$'))
+    S = iter(squeeze_blanks(inp.replace('\n',' ') + '$'))
     t = S.next()
     while t != '$':
         if t == SPACE:
@@ -54,7 +58,7 @@ def scan(inp):
         elif t in SYM:
             yield t
             t = S.next()
-        else:
+        else: # keywords and literals, undistinguished
             word = ''
             while t != '$' and t not in SYM and t != SPACE:
                 word += t
@@ -265,7 +269,7 @@ def mkdot(target):
         g = struct.graph()
         n = struct.labels()
         a = dict(struct.anno())
-        # prefix 'cluster' alters layout behavior: do not remove
+        # Prefix 'cluster' alters layout behavior. Do not remove
         target.send('  subgraph cluster_compound%s {\n' % c)
         c += 1
         for (id, label) in n:

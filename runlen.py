@@ -5,6 +5,14 @@ An input string has runs of 1+ spaces between words (1+
 non-space). The output is like the input except that every run of
 spaces is replaced by a single space.
 
+"""
+
+import re
+def squeeze_blanks(s):
+    pat = re.compile(r'[ ]+')
+    return pat.sub(' ', s)
+
+"""
 Formal
 ------
 The input is an alternating sequence of words and gaps. Most simply,

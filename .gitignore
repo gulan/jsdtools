@@ -9,4 +9,5 @@ dist
 my_*
 2/
 *.egg-info/
+*.dot
 
