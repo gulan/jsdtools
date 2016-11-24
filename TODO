@@ -1,7 +1,4 @@
-Import into git
-Add setup.py
-Parse many structures per file
-Put subgraphs inside the digraph. Use magical prefix 'cluster' to frame each tree.
+* Add command line options.
   
 
 

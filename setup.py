@@ -1,7 +1,7 @@
 import sys
 from setuptools import setup
 
-NAME = 'jsp-tooling'
+NAME = 'jsd-tools'
 DESCRIPTION = "Tools in support of M. Jackson's JSP/JSD development methods."
 VERSION = '1.0.0'
 AUTHOR = 'gulan'
@@ -13,6 +13,5 @@ setup(name = NAME,
       author_email = AUTHOR_EMAIL,
       description = DESCRIPTION,
       license = 'ISC',
-      # test_suite = 'test.test_action',
-      scripts = ['astjsd.py', 'runlen.py'])
+      scripts = ['astjsd.py'])
 
