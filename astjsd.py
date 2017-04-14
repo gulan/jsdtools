@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+# The way I usually write it.
 """
 rep customers:
     seq onecust:
@@ -9,7 +10,10 @@ rep customers:
             withdraw
         terminate
 """
-f1 = """
+
+# The lisp-like syntax used here.
+# (Store in file named account.jsd)
+"""
 (rep customer (
     seq onecust [
         (lit invest) 
@@ -18,23 +22,22 @@ f1 = """
             (lit withdraw)]) 
         (lit terminate)]))
 """
+
+# Meta Syntax
 """
-G = '(' . X . ')'
-X = REP | SEQ | ALT | LIT
-REP = 'rep' . LABEL . G
-SEQ = 'seq' . LABEL . '[' . G+ . ']'
-ALT = 'alt' . LABEL . '[' . G+ . ']'
-lit = 'lit' . LITERAL'
+      G = '(' . X . ')'
+      X = REP | SEQ | ALT | LIT
+    REP = 'rep' . LABEL . G
+    REP1 = 'rep+' . LABEL . G
+    SEQ = 'seq' . LABEL . '[' . G+ . ']'
+    ALT = 'alt' . LABEL . '[' . G+ . ']'
+    LIT = 'lit' . LITERAL'
 """
 
 import re
-import StringIO
 import sys
 
-SPACE = ' '
-SYM = list(iter('()[]'))
-# KEYWORD = ['rep','seq','alt','lit']
-
+PUNCT = list(iter('()[]'))
 TOK = None # global variable
 
 def mkseqno():
@@ -44,25 +47,26 @@ def mkseqno():
         n += 1
 seqno = mkseqno()
 
-def squeeze_blanks(s):
-    pattern = r'[ ]+'
-    replacement = ' '
-    return re.sub(pattern, replacement, s)
-
 def scan(inp):
-    S = iter(squeeze_blanks(inp.replace('\n',' ') + '$'))
-    t = S.next()
+    # convert inp string to sequence of tokens
+    def squeeze_blanks(s):
+        pattern = r'[ ]+'
+        replacement = ' '
+        return re.sub(pattern, replacement, s)
+
+    K = iter(squeeze_blanks(inp.replace('\n',' ') + '$'))
+    t = K.next()
     while t != '$':
-        if t == SPACE:
-            t = S.next()
-        elif t in SYM:
+        if t == ' ':
+            t = K.next()
+        elif t in PUNCT:
             yield t
-            t = S.next()
+            t = K.next()
         else: # keywords and literals, undistinguished
             word = ''
-            while t != '$' and t not in SYM and t != SPACE:
+            while t != '$' and t not in PUNCT and t != ' ':
                 word += t
-                t = S.next()
+                t = K.next()
             yield word
     yield '$'
 
@@ -76,165 +80,116 @@ def expect(t):
     get()
     assert TOK in m, 'unexpected token: {}'.format(t)
 
-# --- grammar-specific ---
-
-class Lit(object):
-    def __init__(self):
-        self.child = None
-        self.literal = None
+class Abstract(object):
+    def __init__(self,label):
+        self.child = []
+        self.label = label
+        self.ntype = self.__class__.__name__.lower()
         self.sn = seqno.next()
-    def set_label(self, literal):
-        self.literal = literal
-    def __repr__(self): return '(lit {})'.format(self.literal)
+
+    def __repr__(self): raise NotImplemented
+
+    def anno(self):
+        """The compound nodes (alt and rep) are shown on the output
+        tree by marks (* or o) on their child nodes. The anno method
+        builds a map from each node's unique sn to the type ('alt',
+        'rep') of its parent."""
+        raise NotImplemented
+
+    def graph(self):
+        """ Returns a list of parent-child pairs. Only the sequence
+        number is given for each node.  """
+        raise NotImplemented
+
+    def labels(self):
+        """A label is the user-given name of a node. Note that the
+        name may be any string that the user provides, and is not
+        resticted to looking like an identifier.
+
+        This function returns a list of node-label pairs. Each node is
+        by it sequence number"""
+        raise NotImplemented
+
+class Lit(Abstract):
+    def __repr__(self): return '({} {})'.format(self.ntype,self.label)
     def graph(self): return []
-    def labels(self): return [(self.sn, self.literal)]
+    def labels(self): return [(self.sn, self.label)]
     def anno(self): return []
 
-class Rep(object):
-    def __init__(self):
-        self.label = None
-        self.child = []
-        self.sn = seqno.next()
-    def set_label(self, label):
-        self.label = label
+class Compound(Abstract):
+    def __repr__(self): return '({} {} {})'.format(self.ntype,self.label,self.children())
+    def add_child(self, other): self.child.append(other)
+
+    def anno(self):
+        r = []
+        for c in self.child:
+            r += c.anno()
+            r.append((c.sn, self.ntype))
+        return r
+
+    def graph(self):
+        r = []
+        for c in self.child:
+            r += c.graph()
+            r.append((self.sn, c.sn))
+        return r
+
+    def labels(self):
+        r = []
+        for c in self.child:
+            r += c.labels()
+            r.append((self.sn, self.label))
+        return r
+
+class Rep(Compound):
     def add_child(self, other):
         assert self.child == [], "rep allows only one child"
-        self.child.append(other)
-    def __repr__(self):
-        return '(rep {} {})'.format(self.label,self.child[0])
-    def graph(self):
-        r = []
-        for c in self.child:
-            g = c.graph()
-            r += g
-            n = (self.sn, c.sn)
-            r.append(n)
-        return r
-    def labels(self):
-        r = []
-        for c in self.child:
-            g = c.labels()
-            r += g
-        r.append((self.sn, self.label))
-        return r
-    def anno(self):
-        r = []
-        for c in self.child:
-            g = c.anno()
-            r += g
-            n = (c.sn, 'rep')
-            r.append(n)
-        return r
+        Compound.add_child(self,other)
+    def children(self): return self.child[0]
 
-class Seq(object):
-    def __init__(self):
-        self.label = None
-        self.child = []
-        self.sn = seqno.next()
-    def set_label(self, label):
-        self.label = label
+class Rep1(Compound):
     def add_child(self, other):
-        self.child.append(other)
-    def __repr__(self):
-        cs = ' '.join(repr(c) for c in self.child)
-        return '(seq {} [{}])'.format(self.label,cs)
-    def graph(self):
-        r = []
-        for c in self.child:
-            g = c.graph()
-            r += g
-            n = (self.sn, c.sn)
-            r.append(n)
-        return r
-    def labels(self):
-        r = []
-        for c in self.child:
-            g = c.labels()
-            r += g
-        r.append((self.sn, self.label))
-        return r
-    def anno(self):
-        r = []
-        for c in self.child:
-            g = c.anno()
-            r += g
-            n = (c.sn, 'seq')
-            r.append(n)
-        return r
+        assert self.child == [], "rep allows only one child"
+        Compound.add_child(self,other)
+    def children(self): return self.child[0]
 
-class Alt(object):
-    def __init__(self):
-        self.label = None
-        self.child = []
-        self.sn = seqno.next()
-    def set_label(self, label):
-        self.label = label
-    def add_child(self, other):
-        self.child.append(other)
-    def __repr__(self):
-        cs = ' '.join(repr(c) for c in self.child)
-        return '(alt {} [{}])'.format(self.label,cs)
-    def graph(self):
-        r = []
-        for c in self.child:
-            g = c.graph()
-            r += g
-            n = (self.sn, c.sn)
-            r.append(n)
-        return r
-    def labels(self):
-        r = []
-        for c in self.child:
-            g = c.labels()
-            r += g
-        r.append((self.sn, self.label))
-        return r
-    def anno(self):
-        r = []
-        for c in self.child:
-            g = c.anno()
-            r += g
-            n = (c.sn, 'alt')
-            r.append(n)
-        return r
+class Seq(Compound):
+    def children(self): return ' '.join(repr(c) for c in self.child)
+
+class Alt(Compound):
+    def children(self): return ' '.join(repr(c) for c in self.child)
 
 def lit():
-    literal = TOK
-    w = Lit()
-    w.set_label(literal)
-    return w
+    return Lit(TOK)
 
 def rep():
-    label = TOK
-    w = Rep()
-    w.set_label(label)
+    w = Rep(TOK)
     get()
-    r = g()
-    w.add_child(r)
+    w.add_child(g())
+    return w
+
+def rep1():
+    w = Rep1(TOK)
+    get()
+    w.add_child(g())
     return w
 
 def seq():
-    label = TOK
-    w = Seq()
-    w.set_label(label)
+    w = Seq(TOK)
     expect('[')
     get()
     while TOK != ']':
-        r = g()
-        w.add_child(r)
+        w.add_child(g())
         get()
     return w
 
 def alt():
-    label = TOK
-    w = Alt()
-    w.set_label(label)
+    w = Alt(TOK)
     expect('[')
     get()
     assert TOK in set('(]')
     while TOK != ']':
-        r = g()
-        w.add_child(r)
+        w.add_child(g())
         get()
     return w
 
@@ -242,67 +197,72 @@ def g():
     assert TOK == '(', repr(TOK)
     get()
     if TOK == 'rep':
-        get()
-        w = rep()
+        get(); w = rep()
+    elif TOK == 'rep1':
+        get(); w = rep1()
     elif TOK == 'seq':
-        get()
-        w = seq()
+        get(); w = seq()
     elif TOK == 'alt':
-        get()
-        w = alt()
+        get(); w = alt()
     elif TOK == 'lit':
-        get()
-        w = lit()
+        get(); w = lit()
     expect(')')
     return w
 
 def mkdot(target):
-    target.send('digraph fig7 {\n')
-    target.send('  node [shape=rect]\n')
-    target.send('  edge [dir=none]\n')
-    c = 1
-    while 1:
-        try:
-            struct = (yield)
-        except GeneratorExit:
-            break
-        g = struct.graph()
-        n = struct.labels()
-        a = dict(struct.anno())
-        # Prefix 'cluster' alters layout behavior. Do not remove
-        target.send('  subgraph cluster_compound%s {\n' % c)
-        c += 1
-        for (id, label) in n:
+    def _aux():
+        target.send('digraph fig7 {\n')
+        target.send('  node [shape=rect]\n')
+        target.send('  edge [dir=none]\n')
+        c = 1
+        while 1:
             try:
-                kind = a[id]
-            except KeyError:
-                kind = 'root'
-            if kind == 'rep':
-                label = '*\\r' + label
-            elif kind == 'alt':
-                label = 'o\\r' + label
-            target.send('    {} [label="{}"]\n'.format(id, label))
-        for (parent, child) in g:
-            target.send('    {} -> {}\n'.format(parent, child))
-        target.send('  }\n')
-    target.send('}\n')
+                struct = (yield)
+            except GeneratorExit:
+                break
+            g = struct.graph()
+            n = struct.labels()
+            a = dict(struct.anno())
+            # Prefix 'cluster' alters layout behavior. Do not remove
+            target.send('  subgraph cluster_compound%s {\n' % c)
+            c += 1
+            for (id, label) in n:
+                try:
+                    ntype = a[id]
+                except KeyError:
+                    ntype = 'root'
+                if ntype == 'rep':
+                    label = '*\\r' + label
+                elif ntype == 'rep1':
+                    label = '+\\r' + label
+                elif ntype == 'alt':
+                    label = 'o\\r' + label
+                target.send('    {} [label="{}"]\n'.format(id, label))
+            for (parent, child) in g:
+                target.send('    {} -> {}\n'.format(parent, child))
+            target.send('  }\n')
+        target.send('}\n')
+    x = _aux()
+    x.next()
+    return x
 
 def mkprinter():
-    while 1:
-        print (yield),
+    def _aux():
+        while 1:
+            print (yield),
+    printer = _aux()
+    printer.next()
+    return printer
 
-def clean_input(fh):
-    return ''.join(m for m in fh.readlines() if not m.startswith('#'))
+def filter_comments(fh):
+    return ''.join(m for m in fh.readlines()
+                   if not m.startswith('#') and not m.startswith(';'))
 
 if __name__ == '__main__':
-    printer = mkprinter()
-    printer.next()
-    dot = mkdot(printer)
-    dot.next()
-    inp = clean_input(sys.stdin)
-    S = scan(inp)
+    dot = mkdot(mkprinter())
+    S = scan(filter_comments(sys.stdin)) # S is a global in get()
     get()
-    while TOK != '$':
+    while TOK != '$': # TOK is a global set by get()
         w = g()
         dot.send(w)
         get()
