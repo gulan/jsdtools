@@ -34,6 +34,11 @@ rep customers:
     LIT = 'lit' . LITERAL'
 """
 
+# TBD
+# Why are parents duped?
+# Ensure seq order
+# Lang extension to give coorsp.
+
 import re
 import sys
 
@@ -41,7 +46,7 @@ PUNCT = list(iter('()[]'))
 TOK = None # global variable
 
 def mkseqno():
-    n = 1000
+    n = 10
     while 1:
         yield n
         n += 1
@@ -73,7 +78,8 @@ def scan(inp):
 def get():
     global TOK
     TOK = S.next()
-    # print >>sys.stderr, '   |TOK> {}'.format(TOK)
+    if 0 and TOK not in '[]()':
+        print >>sys.stderr, '   |TOK> {}'.format(TOK)
 
 def expect(t):
     m = set(t)
@@ -117,7 +123,9 @@ class Lit(Abstract):
     def anno(self): return []
 
 class Compound(Abstract):
-    def __repr__(self): return '({} {} {})'.format(self.ntype,self.label,self.children())
+    def __repr__(self):
+        return '({} {} {})'.format(self.ntype,self.label,self.children())
+    
     def add_child(self, other): self.child.append(other)
 
     def anno(self):
@@ -209,6 +217,11 @@ def g():
     expect(')')
     return w
 
+def dedup(m):
+    p = list(set(m))
+    p.sort()
+    return p
+
 def mkdot(target):
     def _aux():
         target.send('digraph fig7 {\n')
@@ -224,8 +237,10 @@ def mkdot(target):
             n = struct.labels()
             a = dict(struct.anno())
             # Prefix 'cluster' alters layout behavior. Do not remove
-            target.send('  subgraph cluster_compound%s {\n' % c)
+            # target.send('  subgraph cluster_compound%s {\n' % c)
+            target.send('  subgraph compound%s {\n' % c)
             c += 1
+            buf = []
             for (id, label) in n:
                 try:
                     ntype = a[id]
@@ -237,9 +252,18 @@ def mkdot(target):
                     label = '+\\r' + label
                 elif ntype == 'alt':
                     label = 'o\\r' + label
-                target.send('    {} [label="{}"]\n'.format(id, label))
-            for (parent, child) in g:
-                target.send('    {} -> {}\n'.format(parent, child))
+                elif ntype in ('seq', 'lit', 'root'):
+                    pass
+                else:
+                    raise Exception, "unknown token: %s" % ntype
+                st = '    {} [label="{}"]\n'.format(id, label)
+                buf.append(st)
+            buf = dedup(buf)
+            for st in buf:
+                target.send(st)
+            for p in dedup([p for (p,_) in g]):
+                chs = '{' + ' '.join(repr(c) for (pp,c) in g if pp == p) + '}'
+                target.send('    {} -> {}\n'.format(p,chs))
             target.send('  }\n')
         target.send('}\n')
     x = _aux()
