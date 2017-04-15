@@ -45,5 +45,7 @@ use to create a graphic representation of the tree ::
     astjsd.py < account.jsd | dot -T pdf >account.pdf
     evince account.pdf &
 
-.. image:: account.gif
+.. image:: account/account.gif
 
+References
+----------	   

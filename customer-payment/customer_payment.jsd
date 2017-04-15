@@ -1,0 +1,12 @@
+(rep pfile
+    (rep cus-group
+        (lit pay-rec)))
+
+(seq epfile [
+    (rep epfile-body
+        (seq ecus-group [
+            (rep ecusgp-body
+                (lit epay-rec))
+            (lit custot-record)]))
+    (lit ftotal-record)])
+    
