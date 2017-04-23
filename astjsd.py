@@ -59,7 +59,7 @@ def scan(inp):
         replacement = ' '
         return re.sub(pattern, replacement, s)
 
-    K = iter(squeeze_blanks(inp.replace('\n',' ') + '$'))
+    K = iter(squeeze_blanks(inp.replace('\n',' ').replace('\t',' ') + '$'))
     t = K.next()
     while t != '$':
         if t == ' ':
@@ -99,22 +99,36 @@ class Abstract(object):
         """The compound nodes (alt and rep) are shown on the output
         tree by marks (* or o) on their child nodes. The anno method
         builds a map from each node's unique sn to the type ('alt',
-        'rep') of its parent."""
+        'rep', or 'seq') of its parent."""
         raise NotImplemented
 
     def graph(self):
         """ Returns a list of parent-child pairs. Only the sequence
-        number is given for each node.  """
+        number is given for each node. """
         raise NotImplemented
 
     def labels(self):
         """A label is the user-given name of a node. Note that the
-        name may be any string that the user provides, and is not
+        name may be any text that the user provides, and is not
         resticted to looking like an identifier.
-
+        
         This function returns a list of node-label pairs. Each node is
-        by it sequence number"""
+        identified by its sequence number"""
         raise NotImplemented
+
+    def walk(self, f=lambda x: x, level=0):
+        yield f((level, self.sn, self.ntype, self.label, len(self.child)))
+        for c in self.child:
+            for t in c.walk(f=f, level=level+1):
+                yield t
+
+    def relabel(self,dict):
+        try:
+            self.label = dict[self.label]
+        except KeyError:
+            pass
+        for c in self.child:
+            c.relabel(dict)
 
 class Lit(Abstract):
     def __repr__(self): return '({} {})'.format(self.ntype,self.label)
@@ -124,7 +138,7 @@ class Lit(Abstract):
 
 class Compound(Abstract):
     def __repr__(self):
-        return '({} {} {})'.format(self.ntype,self.label,self.children())
+        return '({} {} [{}])'.format(self.ntype,self.label,self.children())
     
     def add_child(self, other): self.child.append(other)
 
@@ -144,18 +158,22 @@ class Compound(Abstract):
 
     def labels(self):
         r = []
+        r.append((self.sn, self.label))
         for c in self.child:
             r += c.labels()
-            r.append((self.sn, self.label))
         return r
 
 class Rep(Compound):
+    def __repr__(self):
+        return '({} {} {})'.format(self.ntype,self.label,self.children())
     def add_child(self, other):
         assert self.child == [], "rep allows only one child"
         Compound.add_child(self,other)
     def children(self): return self.child[0]
 
 class Rep1(Compound):
+    def __repr__(self):
+        return '({} {} {})'.format(self.ntype,self.label,self.children())
     def add_child(self, other):
         assert self.child == [], "rep allows only one child"
         Compound.add_child(self,other)
@@ -195,13 +213,14 @@ def alt():
     w = Alt(TOK)
     expect('[')
     get()
-    assert TOK in set('(]')
+    assert TOK in set('(]'), "TOK=%r" % TOK
     while TOK != ']':
         w.add_child(g())
         get()
     return w
 
 def g():
+    # Parse input tokens and return AST
     assert TOK == '(', repr(TOK)
     get()
     if TOK == 'rep':
@@ -220,6 +239,7 @@ def g():
 def dedup(m):
     p = list(set(m))
     p.sort()
+    # if len(m) != len(p): raise Exception, ("duplicates %r %r" % (m,p))
     return p
 
 def mkdot(target):
@@ -230,18 +250,17 @@ def mkdot(target):
         c = 1
         while 1:
             try:
-                struct = (yield)
+                struct = (yield) # entire top-level AST in one slurp
             except GeneratorExit:
                 break
             g = struct.graph()
-            n = struct.labels()
             a = dict(struct.anno())
-            # Prefix 'cluster' alters layout behavior. Do not remove
+            # Prefix 'cluster' alters layout behavior.
             # target.send('  subgraph cluster_compound%s {\n' % c)
             target.send('  subgraph compound%s {\n' % c)
             c += 1
             buf = []
-            for (id, label) in n:
+            for (id, label) in struct.labels():
                 try:
                     ntype = a[id]
                 except KeyError:
@@ -252,16 +271,17 @@ def mkdot(target):
                     label = '+\\r' + label
                 elif ntype == 'alt':
                     label = 'o\\r' + label
+                elif ntype == 'seq':
+                    label = '.\\r' + label
                 elif ntype in ('seq', 'lit', 'root'):
                     pass
                 else:
                     raise Exception, "unknown token: %s" % ntype
                 st = '    {} [label="{}"]\n'.format(id, label)
                 buf.append(st)
-            buf = dedup(buf)
             for st in buf:
                 target.send(st)
-            for p in dedup([p for (p,_) in g]):
+            for p in set(p for (p,_) in g):
                 chs = '{' + ' '.join(repr(c) for (pp,c) in g if pp == p) + '}'
                 target.send('    {} -> {}\n'.format(p,chs))
             target.send('  }\n')
@@ -278,19 +298,29 @@ def mkprinter():
     printer.next()
     return printer
 
-def filter_comments(fh):
-    return ''.join(m for m in fh.readlines()
+def filter_comments(text):
+    return ''.join(m for m in text
                    if not m.startswith('#') and not m.startswith(';'))
 
-if __name__ == '__main__':
+def main(data):
+    global S, TOK
+    S = scan(filter_comments(data)) # S is a global in get()
     dot = mkdot(mkprinter())
-    S = scan(filter_comments(sys.stdin)) # S is a global in get()
     get()
     while TOK != '$': # TOK is a global set by get()
         w = g()
         dot.send(w)
         get()
     dot.close()
+
+def render_one(ast):
+    dot = mkdot(mkprinter())
+    dot.send(ast)
+    dot.close()
+    
+
+if __name__ == '__main__':
+    main(sys.stdin.readlines())
 
 # cat example/account.jsd |./astjsd.py |dot -T pdf >xxx.pdf ; evince xxx.pdf
 
