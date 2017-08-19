@@ -65,6 +65,7 @@ rep = star
 import sys
 from spark7 import (GenericScanner, GenericParser)
 import astjsd
+import ast2dot
 
 """
 re = lit . (seq | rep | -)
@@ -79,11 +80,13 @@ def mkgensym():
             yield "_%s" % i
             i += 1
     return gensym()
+
 _gensym = mkgensym()
-def gensym():
-    return _gensym.next()
+
+def gensym(): return _gensym.next()
 
 class Token:
+
     def __init__(self, type, attr=None):
         self.type = type
         self.attr = attr
@@ -98,6 +101,7 @@ class Token:
         return cmp(self.type, other)
 
 class Scanner(GenericScanner):
+
     def __init__(self):
         GenericScanner.__init__(self)
 
@@ -219,23 +223,22 @@ def s1():
     ast = re_to_ast('(meet . (award*))*')
     dict = {'_0':'work','_1':'period','_2':'panel'}
     ast.relabel(dict)
-    astjsd.render_one(ast)
+    ast2dot.render_one(ast)
 
 def s2():
     ast = re_to_ast('sunscribe . (enter*)')
     ast.relabel({'_0':'reader-body','_1':'reader'})
-    astjsd.render_one(ast)
-# s2()
+    ast2dot.render_one(ast)
 
 if 0:
     ast = re_to_ast('buy . ((use|bind)*)')
     ast.relabel({'_0':'event','_1':'book-body', '_2':'book'})
-    astjsd.render_one(ast)
+    ast2dot.render_one(ast)
 
 if 0:
     ast = re_to_ast("bind . (bindx*)")
     # ast.relabel({'_0':'event','_1':'book-body', '_2':'book'})
-    astjsd.render_one(ast)
+    ast2dot.render_one(ast)
 
 if 0:
     print 'graph:', ast.graph()
