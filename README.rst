@@ -3,7 +3,7 @@ Generate Jackson tree diagrams from a DSL
 
 The lifetime activity of a single bank customer might be represented
 as a regular expression. Given the events invest, pay-in, withdraw and
-terminate, a regular expression constraint the possible ordering of
+terminate, a regular expression constrains the possible orderings of
 these events. ::
 
     account ::= invest + (payin | withdraw)* + terminate

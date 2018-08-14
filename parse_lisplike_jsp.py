@@ -53,13 +53,13 @@ def Scanner(inp):
     K = iter(squeeze_blanks(filter_comments(inp) + '$'))
     
     t = K.next()
-    while t != '$': # the $ is my made-up end-of-string.
+    while t != '$': # the $ is my made-up end-of-string token.
         if t == ' ':
             t = K.next()
         elif t in PUNCT:
             yield t
             t = K.next()
-        else: # keywords and literals, undistinguished
+        else: # keywords and literals are undistinguished
             word = ''
             while t != '$' and t not in PUNCT and t != ' ':
                 word += t
@@ -70,7 +70,7 @@ def Scanner(inp):
 class Parser(object):
 
     def __init__(self, source):
-        self.G = source
+        self.G = source         # stream of tokens
         self.TOK = None
 
     def get(self):

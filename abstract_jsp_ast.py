@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# TBD: children() or children_of() ?
+
 def mkseqno():
     n = 10
     while 1:
@@ -17,9 +19,9 @@ class Abstract(object):
     # TBD: move out the __init__ as it is particular to the implementation.
     """
     
-    def __init__(self,label):
+    def __init__(self, label):
         self.child = []
-        self.label = label
+        self.label = label    # string type
         self.ntype = self.__class__.__name__.lower()
         self.sn = seqno.next()
 
@@ -36,6 +38,8 @@ class Abstract(object):
         """ Returns a list of parent-child pairs. Only the sequence
         number is given for each node.
         
+            [(parent#, child#), ...]
+        
         The order of child nodes for every Seq must be preserved. (And
         it is here, but only because of how it is implemented. I need
         to fix this.)
@@ -46,6 +50,8 @@ class Abstract(object):
         """A label is the user-given name of a node. Note that the
         name may be any text that the user provides, and is not
         resticted to looking like an identifier.
+
+            [(node#, 'label'), ...]
         
         This function returns a list of node-label pairs. Each node is
         identified by its sequence number"""
@@ -66,9 +72,13 @@ class Abstract(object):
             c.relabel(dict)
             
     def parents(self):
+        """ Return a set of node# that has every node that acts as
+        parent somewhere."""
         return set(p for (p,_) in self.graph())
     
     def children_of(self, parent):
+        """ Return a sequence (generator) of child# for the given
+        parent#. """
         for (pp, child) in self.graph():
             if pp == parent:
                 yield child
@@ -78,6 +88,7 @@ class Lit(Abstract):
     def graph(self): return []
     def labels(self): return [(self.sn, self.label)]
     def anno(self): return []
+    def lisp(self): return '(lit %s)\n' % self.label
 
 class Compound(Abstract):
     
@@ -138,6 +149,11 @@ class Rep1(Compound):
 class Seq(Compound):
 
     def children(self): return ' '.join(repr(c) for c in self.child)
+
+    # def lisp(self):
+    #     s = 'seq %s [\n' % self.label
+    #     for c in self.child:
+            
 
 class Alt(Compound):
 
