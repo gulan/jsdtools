@@ -3,7 +3,7 @@ from setuptools import setup
 
 NAME = 'jsd-tools'
 DESCRIPTION = "Tools in support of M. Jackson's JSP/JSD development methods."
-VERSION = '1.1.1'
+VERSION = '1.1.2'
 AUTHOR = 'gulan'
 AUTHOR_EMAIL = 'glen.wilder@gmail.com'
 

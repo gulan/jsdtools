@@ -2,6 +2,32 @@
 
 # TBD: children() or children_of() ?
 
+"""
+type Label = String
+data JSP =   Lit Label
+           | Seq Label [JSP]
+           | Alt Label [JSP]
+           | Rep Label JSP
+
+Each node has a uid.
+  * retains identity even if labels change
+  * lists of tuples of nodeid permit graph processing
+  * what about t.copy()?
+  * what about serialization?
+  * why not use object id?
+
+Each node has a string field naming its class.
+  * Why? Python nodes already know their class
+
+Most computation on JSP starts by converting the tree to a graph.
+  * Why have two representations?
+  * Why does the graph no have Lit nodes?
+
+Abstract and Compound classes seem more about avoiding code
+duplication than hiding the implementation.
+
+"""
+
 def mkseqno():
     n = 10
     while 1:
@@ -150,12 +176,65 @@ class Seq(Compound):
 
     def children(self): return ' '.join(repr(c) for c in self.child)
 
-    # def lisp(self):
-    #     s = 'seq %s [\n' % self.label
-    #     for c in self.child:
-            
-
 class Alt(Compound):
 
     def children(self): return ' '.join(repr(c) for c in self.child)
 
+# TBD: do not use lisp syntax for repr()
+
+def test_repr_lit():
+    assert repr(Lit('alpha')) == '(lit alpha)'
+    
+def test_repr_seq():
+    s = Seq('seq1')
+    s.add_child(Lit('alpha'))
+    s.add_child(Lit('beta'))
+    s.add_child(Lit('gamma'))
+    assert repr(s) == '(seq seq1 [(lit alpha) (lit beta) (lit gamma)])'
+    
+def test_repr_alt():
+    s = Alt('alt1')
+    s.add_child(Lit('alpha'))
+    s.add_child(Lit('beta'))
+    s.add_child(Lit('gamma'))
+    assert repr(s) == '(alt alt1 [(lit alpha) (lit beta) (lit gamma)])'
+    
+def test_repr_rep():
+    s = Rep('repX')
+    s.add_child(Lit('alpha'))
+    assert repr(s) == '(rep repX (lit alpha))'
+    
+if __name__ == '__main__':
+    p = Lit('alpha')
+    
+    q = Seq('seq1')
+    q.add_child(Lit('alpha'))
+    q.add_child(Lit('beta'))
+    q.add_child(Lit('gamma'))
+    
+    r = Alt('alt1')
+    r.add_child(Lit('alpha'))
+    r.add_child(Lit('beta'))
+    r.add_child(Lit('gamma'))
+    
+    s = Rep('repX')
+    s.add_child(Lit('alpha'))
+    
+    print p.labels()
+    print q.labels()
+    print r.labels()
+    print s.labels()
+    print '-' * 40
+    print p.anno()
+    print q.anno()
+    print r.anno()
+    print s.anno()
+    print '-' * 40
+    print p.graph()
+    print q.graph()
+    print r.graph()
+    print s.graph()
+
+
+'(alt alt1 [(lit alpha) (lit beta) (lit gamma)])'
+'(rep repX (lit alpha))'

@@ -1,5 +1,26 @@
 * Add command line options.
-  
+--
+After a year, I have better ideas on how to structure this code.
 
+I have an abstract syntax of JSP and several concrete repsentations:
+
+* Lisp-like
+* Dot
+* Python-like
+* Regex
+
+Each of these forms should be organized as separate packages. Each package would have conversion:
+
+toAst    :: Concrete -> AST
+fromAst  :: AST -> Concrete
+
+The packages supply one of these conversions.
+
+Lisp-like:
+
+ toAst :: Lisp -> AST
+ fromAst :: AST -> Lisp
+
+Some packages only supply one conversion. There is no need to convert dot to ast.
 
 

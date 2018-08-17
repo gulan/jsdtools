@@ -20,6 +20,6 @@ def main(data):
 if __name__ == '__main__':
     main(sys.stdin.readlines())
 
-# cat account/account.jsd |./astjsd.py |dot -T pdf >/tmp/account.pdf ; evince tmp/account.pdf
+# cat account/account.jsd |./astjsd.py |dot -T pdf >/tmp/account.pdf ; evince /tmp/account.pdf
 
 
