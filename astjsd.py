@@ -3,8 +3,8 @@
 # Lang extension to give coorsp.
 
 import sys
-from parse_lisplike_jsp import Scanner, Parser
-from ast2dot import mkdot, mkprinter
+from jsdtools.lisp_syntax.parse_lisp import Scanner, Parser
+from jsdtools.dot_syntax.render_dot import mkdot, mkprinter
 
 def main(data):
     dot = mkdot(mkprinter())

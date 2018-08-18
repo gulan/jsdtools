@@ -64,8 +64,7 @@ rep = star
 
 import sys
 from spark7 import (GenericScanner, GenericParser)
-import astjsd
-import ast2dot
+from jsdtools.abstract_jsp_ast import (Lit, Seq, Alt, Rep)
 
 """
 re = lit . (seq | rep | -)
@@ -80,10 +79,6 @@ def mkgensym():
             yield "_%s" % i
             i += 1
     return gensym()
-
-_gensym = mkgensym()
-
-def gensym(): return _gensym.next()
 
 class Token:
 
@@ -142,6 +137,7 @@ class ExprParser(GenericParser):
 
     def __init__(self, start='re'):
         GenericParser.__init__(self, start)
+        self._gensym = mkgensym()
 
     def p_re_1(self, args):
         ' re ::= seq '
@@ -166,7 +162,7 @@ class ExprParser(GenericParser):
 
     def p_seq_2(self, args):
         ' seq ::= exp '
-        w = astjsd.Seq(gensym())
+        w = Seq(self._gensym.next())
         w.add_child(args[0])
         # print 'seq_2>> ', w
         return w
@@ -179,7 +175,7 @@ class ExprParser(GenericParser):
 
     def p_alt_2(self, args):
         ' alt ::= exp '
-        w = astjsd.Alt(gensym())
+        w = Alt(self._gensym.next())
         w.add_child(args[0])
         # print 'alt_2>> ', w
         return w
@@ -188,13 +184,13 @@ class ExprParser(GenericParser):
     def p_rep(self, args):
         ' rep ::= exp * '
         # print 'rep>> ', args
-        w = astjsd.Rep(gensym())
+        w = Rep(self._gensym.next())
         w.add_child(args[0])
         return w
 
     def p_exp_1(self, args):
         ' exp ::= LIT '
-        w = astjsd.Lit(args[0].attr)
+        w = Lit(args[0].attr)
         # print 'exp_1>> ', w
         return w
 
@@ -204,100 +200,56 @@ class ExprParser(GenericParser):
         return args[1]
 
 def re_to_ast(regex):
-    return ExprParser().parse(Scanner().tokenize(regex))
+    s = Scanner()
+    r = s.tokenize(regex)
+    p = ExprParser()
+    ast = p.parse(r)
+    return ast
 
-# print ExprParser().parse(Scanner().tokenize('a*'))
-# ExprParser().parse(Scanner().tokenize('a|b'))
-# ast = ExprParser().parse(Scanner().tokenize('a|b|c'))
-# ast = ExprParser().parse(Scanner().tokenize('a.b'))
-# ast = ExprParser().parse(Scanner().tokenize('a.b.c'))
-# ExprParser().parse(Scanner().tokenize('cat*'))
-# ast = ExprParser().parse(Scanner().tokenize('a|b|(c.d)'))
-# ast = ExprParser().parse(Scanner().tokenize('(a*)|b|(c|d)'))
-
-# ast = ExprParser().parse(Scanner().tokenize('(a)'))
-# ast = ExprParser().parse(Scanner().tokenize('(a|b|c)'))
-# ExprParser().parse(Scanner().tokenize('(a|b)*'))
-
-def s1():
-    ast = re_to_ast('(meet . (award*))*')
-    dict = {'_0':'work','_1':'period','_2':'panel'}
-    ast.relabel(dict)
-    ast2dot.render_one(ast)
-
-def s2():
-    ast = re_to_ast('sunscribe . (enter*)')
-    ast.relabel({'_0':'reader-body','_1':'reader'})
-    ast2dot.render_one(ast)
-
-if 0:
-    ast = re_to_ast('buy . ((use|bind)*)')
-    ast.relabel({'_0':'event','_1':'book-body', '_2':'book'})
-    ast2dot.render_one(ast)
-
-if 0:
-    ast = re_to_ast("bind . (bindx*)")
-    # ast.relabel({'_0':'event','_1':'book-body', '_2':'book'})
-    ast2dot.render_one(ast)
-
-if 0:
-    print 'graph:', ast.graph()
-    print 'lables:', ast.labels()
-    print 'anno:', ast.anno()
-    print 'walk:', list(ast.walk())
-
-args = sys.argv
-regex = sys.argv[1]
-d = {}
-for (pos,name) in enumerate(sys.argv[2:]):
-    k = "_%d" % pos
-    d[k] = name
-ast = re_to_ast(regex)
-ast.relabel(d)
-# astjsd.render_one(ast)
-print ast
+def test_parse():
+    assert repr(re_to_ast('a')) == '(seq _0 [(lit a)])'
+    assert repr(re_to_ast('a.b')) == '(seq _0 [(lit a) (lit b)])'
+    assert repr(re_to_ast('a|b')) == '(alt _0 [(lit a) (lit b)])'
+    assert repr(re_to_ast('a*')) == '(rep _0 (lit a))'
+    assert repr(re_to_ast('a.b.c')) == '(seq _0 [(lit a) (lit b) (lit c)])'
+    assert repr(re_to_ast('(a.b).c')) == '(seq _1 [(seq _0 [(lit a) (lit b)]) (lit c)])'
+    assert repr(re_to_ast('a.(b.c)')) == '(seq _1 [(lit a) (seq _0 [(lit b) (lit c)])])'
+    assert repr(re_to_ast('a|b|c')) == '(alt _0 [(lit a) (lit b) (lit c)])'
+    assert repr(re_to_ast('(a|b)|c')) == '(alt _1 [(alt _0 [(lit a) (lit b)]) (lit c)])'
+    assert repr(re_to_ast('a|(b|c)')) == '(alt _1 [(lit a) (alt _0 [(lit b) (lit c)])])'
+    assert repr(re_to_ast('(a|b)*')) == '(rep _1 (alt _0 [(lit a) (lit b)]))'
+    assert repr(re_to_ast('(a*)|b')) == '(alt _1 [(rep _0 (lit a)) (lit b)])'
+    assert repr(re_to_ast('((a*)|b)*')) == '(rep _2 (alt _1 [(rep _0 (lit a)) (lit b)]))'
+    assert repr(re_to_ast('(cat|dog)*')) == '(rep _1 (alt _0 [(lit cat) (lit dog)]))'
 
 
+# def s1():
+#     ast = re_to_ast('(meet . (award*))*')
+#     dict = {'_0':'work','_1':'period','_2':'panel'}
+#     ast.relabel(dict)
+#     ast2dot.render_one(ast)
 
+# def s2():
+#     ast = re_to_ast('sunscribe . (enter*)')
+#     ast.relabel({'_0':'reader-body','_1':'reader'})
+#     ast2dot.render_one(ast)
 
+# if 0:
+#     ast = re_to_ast('buy . ((use|bind)*)')
+#     ast.relabel({'_0':'event','_1':'book-body', '_2':'book'})
+#     ast2dot.render_one(ast)
 
+# if 0:
+#     ast = re_to_ast("bind . (bindx*)")
+#     # ast.relabel({'_0':'event','_1':'book-body', '_2':'book'})
+#     ast2dot.render_one(ast)
 
-
-
-
-
-
-
-
-
-
-if 0:
-    print Scanner().tokenize('a')
-    print Scanner().tokenize('a.b.c')
-    print Scanner().tokenize('a|b|c')
-    print Scanner().tokenize('a*')
-    print Scanner().tokenize('cat | dog*')
-
-
-# class ExprParser(GenericParser):
-
-#     def __init__(self, start='re'):
-#         GenericParser.__init__(self, start)
-
-#     def p_rules(self, args):
-#         """
-#             re ::= seq
-#             re ::= rep
-#             re ::= alt
-#             seq ::= seq . exp
-#             seq ::= exp
-#             alt ::= alt | exp
-#             alt ::= exp
-#             rep ::= exp *
-#             exp ::= LIT
-#             exp ::= ( re )
-#         """
-#         print ">", args
-#         return args
-
-
+if __name__ == '__main__':
+    regex = sys.argv[1]
+    d = {}
+    for (pos,name) in enumerate(sys.argv[2:]):
+        k = "_%d" % pos
+        d[k] = name
+    ast = re_to_ast(regex)
+    ast.relabel(d)
+    print ast
