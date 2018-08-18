@@ -8,6 +8,8 @@ build
 dist
 my_*
 2/
+3/
 *.egg-info/
 *.dot
+.pytest_cache/
 
