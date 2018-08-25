@@ -1,0 +1,11 @@
+# Warning: this is a description of a file as seen by the I/O
+# system. We usually want to avoid such generic decsriptions, and
+# describe structures in terms of the problem domain.
+
+(seq file [
+    (rep file-body
+        (seq line [
+            (rep line-body
+                (lit char))
+            (lit newline)]))
+    (lit eof)])

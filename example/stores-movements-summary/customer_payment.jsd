@@ -1,0 +1,47 @@
+(rep pfile
+    (rep cus-group
+        (lit pay-rec)))
+
+(seq pfile [(rep S1 (seq cus-group [(rep S2 (lit pay-rec))]))])
+
+(seq epfile [
+    (rep epfile-body
+        (seq ecus-group [
+            (rep ecusgp-body
+                (lit epay-rec))
+            (lit custot-record)]))
+    (lit ftotal-record)])
+
+(seq pfile~epfile [
+    (rep S1~epfile-body
+        (seq cus-group~ecus-group [
+            (rep S2~ecusgp-body
+                (lit epay-rec))
+            (lit custot-record)]))
+    (lit ftotal-record)])
+
+# 1 pfile = cus-group*
+# 1 cus-group = ray-rec*
+
+# 2 pfile = S1
+# 2 S1 = cus-group*
+# 2 cus-group = S2
+# 2 S2 = pay-rec*
+
+# 3 (seq pfile [])
+# 3 (rep S1 _)
+# 3 (seq cus-group [])
+# 3 (rep S2 _)
+# 3 (lit pay-rec))
+
+
+# (seq pfile~epfile [
+#     (rep pfile'
+#         (rep cus-group
+#             (lit pay-rec)))
+#     (rep epfile-body
+#         (seq ecus-group [
+#             (rep ecusgp-body
+#                 (lit epay-rec))
+#             (lit custot-record)]))
+#     (lit ftotal-record)])

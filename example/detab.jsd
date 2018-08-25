@@ -1,0 +1,22 @@
+# input = content + eof
+# content = line*
+# line = segment-body + final
+# segment-body = segment-type*
+# segment-type = full | brief
+# full = non-tab*        -- 8 of any chars except tab and newline
+# brief = short + tab
+# short = non-tab*       -- from 0 to 7 regular characters
+# final = short + newline
+
+#        BRIEF = (seq brief [SHORT (lit tab)])
+#        FINAL = (seq final [SHORT (lit newline)])
+#         FULL = (rep full (lit non-tab))
+#        SHORT = (rep short (lit non-tab))
+# SEGMENT-TYPE = (alt segment-type [FULL BRIEF])
+# SEGMENT-BODY = (rep segment-body SEGMENT-TYPE)
+#         LINE = (seq line [SEGMENT-BODY FINAL])
+#      CONTENT = (rep content LINE)
+#        INPUT = (seq input [CONTENT (lit eof)])
+
+(seq input [(rep content (seq line [(rep segment-body (alt segment-type [(rep full (lit non-tab)) (seq brief [(rep short (lit non-tab)) (lit tab)])])) (seq final [(rep short (lit non-tab)) (lit newline)])])) (lit eof)])
+

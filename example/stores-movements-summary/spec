@@ -1,0 +1,84 @@
+
+smf | 1
+part-group | #part-group
+mvt-rec | 1/part-group
+issue | 1/mvt-rec - #receipt
+
+1. a = b*
+
+The replication `a` occurs once, so #a = 1.
+
+The replecated part `b` occurs #b times per `a`. Since #a=1, this sim[lifies to #b. We know only the #b is some fixed value such that #b >= 0.
+
+2.
+
+    a = b*
+    b = c
+
+c occurs once per b, so
+
+    #c == #b
+
+3.
+
+    a = b*
+    b = c*
+
+For each b we have 0+ instances of c. Remember that a and b are replications and c is a literal or atomic sysmbol.
+
+
+smf = part-group*
+part-group = mvt-rec*
+mvt-rec = issue | receipt
+
+report = summary-line*
+
+From the problem description, we know that each summary-line
+cooresponds to a part-group. That means that the number of part groups
+is the same as the number of summary lines. Computationally, the sum
+must come after the group of items summed, so a sequence is needed.
+
+smf~summary = (part-group . summary-line)*
+part-group = mvt-rec*
+mvt-rec = issue | receipt
+
+This logially correct, but we do not allow nested expressions. We must name the sequence.
+
+smf~summary = pg~sum*
+pg~sum = part-group . summary-line
+part-group = mvt-rec*
+mvt-rec = issue | receipt
+
+This is the proper combined structure that may be used as a program outline.
+
+customer-payment
+----------------
+
+pfile = cus-group*
+cus-group = pay-rec*
+
+epfile = epfile-body . ftotal-record
+epfile-body = ecus-group*
+ecus-group = ecusgp-body . custot-record
+ecusgp-body = epay-rec*
+
+We have descided that pfile cooresponds to epfile, and in that order.
+
+pfile~epfile = cus-group* . epfile-body . ftotal-record
+
+But this not proper from, so
+
+pfile~epfile = pfile' . epfile-body . ftotal-record
+pfile' = cus-group*
+
+Next,
+
+    cus-group~ecus-group = (cus-group . ecus-group)*
+
+As in account example, we need to factor-out the sequence.
+
+    cus-group~ecus-group = c-group*
+    c-group = cus-group . ecus-group
+
+
+

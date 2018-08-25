@@ -1,0 +1,9 @@
+
+(rep smf
+    (rep part-group
+         (alt mvt-rec [
+	     (lit issue)
+	     (lit receipt)])))
+
+(rep report (lit summary-line))
+

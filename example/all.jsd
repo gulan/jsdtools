@@ -1,0 +1,63 @@
+(rep panel
+    (seq period [
+        (lit meet) 
+        (rep work (lit award))]))
+
+(seq reader [
+    (lit subscribe)
+    (rep reader-body (lit enter))])
+
+(seq book [
+    (lit buy)
+    (rep book-body 
+        (alt event [
+            (lit use)
+            (lit bind)]))])
+
+(seq book [
+    (lit buy)
+    (rep book-body 
+        (alt event-group [
+            (lit use) 
+            (seq bind-group [
+                (lit bind)
+                (rep unnecessary-bind-group 
+                    (lit bind'))])]))])
+
+(rep customer
+    (alt customer-action [
+        (lit invest)
+        (lit pay-in)
+        (lit withdraw)
+        (lit terminate)]))
+
+(seq account [
+    (lit invest)
+    (rep account-body
+        (alt movement [
+            (lit pay-in)
+            (lit withdraw)]))
+    (lit terminate)])
+
+(seq soldier-promotion-career [
+    (lit enlist-private)
+    (alt possible-promotion [
+        (seq higher-rank [
+            (lit promote-acting-captain)
+            (lit promote-substant-captain)
+            (alt possible-promotion [
+                (seq top-rank [
+                    (lit promote-acting-general)
+                    (lit promote-substant-general)])
+                (lit -)])])
+        (lit -)])])
+
+(rep soldier-career-training 
+    (seq cource<c> [
+        (lit enrol<c>)
+        (lit complete<c>)
+        (alt possible-repeat<c> [
+            (seq repeat<c> [
+                (lit re-enrol<c>)
+                (lit complete<c>)])
+            (lit -)])]))
