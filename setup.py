@@ -5,7 +5,7 @@ from setuptools import (setup, find_packages)
 
 NAME = 'jsd-tools'
 DESCRIPTION = "Tools in support of M. Jackson's JSP/JSD development methods."
-VERSION = '1.3.0'
+VERSION = '1.3.1'
 AUTHOR = 'gulan'
 AUTHOR_EMAIL = 'glen.wilder@gmail.com'
 
@@ -18,3 +18,4 @@ setup(name = NAME,
       packages = find_packages('src'),
       package_dir = {'': 'src'},
       scripts = ['src/astjsd.py'])
+

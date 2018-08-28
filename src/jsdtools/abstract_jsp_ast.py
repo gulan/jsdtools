@@ -181,28 +181,6 @@ class Alt(Compound):
     def children(self): return ' '.join(repr(c) for c in self.child)
 
 # TBD: do not use lisp syntax for repr()
-
-def test_repr_lit():
-    assert repr(Lit('alpha')) == '(lit alpha)'
-    
-def test_repr_seq():
-    s = Seq('seq1')
-    s.add_child(Lit('alpha'))
-    s.add_child(Lit('beta'))
-    s.add_child(Lit('gamma'))
-    assert repr(s) == '(seq seq1 [(lit alpha) (lit beta) (lit gamma)])'
-    
-def test_repr_alt():
-    s = Alt('alt1')
-    s.add_child(Lit('alpha'))
-    s.add_child(Lit('beta'))
-    s.add_child(Lit('gamma'))
-    assert repr(s) == '(alt alt1 [(lit alpha) (lit beta) (lit gamma)])'
-    
-def test_repr_rep():
-    s = Rep('repX')
-    s.add_child(Lit('alpha'))
-    assert repr(s) == '(rep repX (lit alpha))'
     
 if __name__ == '__main__':
     p = Lit('alpha')
