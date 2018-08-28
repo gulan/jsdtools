@@ -5,7 +5,7 @@ from setuptools import (setup, find_packages)
 
 NAME = 'jsd-tools'
 DESCRIPTION = "Tools in support of M. Jackson's JSP/JSD development methods."
-VERSION = '1.2.5'
+VERSION = '1.3.0'
 AUTHOR = 'gulan'
 AUTHOR_EMAIL = 'glen.wilder@gmail.com'
 

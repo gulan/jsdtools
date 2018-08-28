@@ -162,7 +162,7 @@ class ExprParser(GenericParser):
 
     def p_seq_2(self, args):
         ' seq ::= exp '
-        w = Seq(self._gensym.next())
+        w = next(Seq(self._gensym))
         w.add_child(args[0])
         # print 'seq_2>> ', w
         return w
@@ -175,7 +175,7 @@ class ExprParser(GenericParser):
 
     def p_alt_2(self, args):
         ' alt ::= exp '
-        w = Alt(self._gensym.next())
+        w = next(Alt(self._gensym))
         w.add_child(args[0])
         # print 'alt_2>> ', w
         return w
@@ -184,7 +184,7 @@ class ExprParser(GenericParser):
     def p_rep(self, args):
         ' rep ::= exp * '
         # print 'rep>> ', args
-        w = Rep(self._gensym.next())
+        w = next(Rep(self._gensym))
         w.add_child(args[0])
         return w
 
@@ -252,4 +252,4 @@ if __name__ == '__main__':
         d[k] = name
     ast = re_to_ast(regex)
     ast.relabel(d)
-    print ast
+    print (ast)

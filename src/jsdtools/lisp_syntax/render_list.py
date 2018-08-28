@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!python
 
 """
 Serialize the ast to the lisp-like form of jsp.
@@ -6,7 +6,7 @@ Serialize the ast to the lisp-like form of jsp.
 """
 
 import sys
-from parse_lisplike_jsp import Scanner, Parser
+# from parse_lisplike_jsp import Scanner, Parser
 
 def printer():
     def aux():
@@ -21,12 +21,12 @@ def printer():
             elif cmd == 'dedent':
                 indent -= 1
             elif cmd == 'newline':
-                print
+                print ()
             else:
                 spacer = ' ' * indent
-                print spacer+cmd,
+                print (spacer+cmd, end='')
     g = aux()
-    g.next()
+    next(g)
     return g
 
 def walk(printer, ast, level=0):
@@ -61,13 +61,13 @@ def walk(printer, ast, level=0):
     printer.send('newline')
 
 
-def main(data):
-    t = Parser(Scanner(data))
-    t.get()
-    ast = t.parse()
-    p = printer()
-    walk(p, ast)
+# def main(data):
+#     t = Parser(Scanner(data))
+#     t.get()
+#     ast = t.parse()
+#     p = printer()
+#     walk(p, ast)
         
 
-if __name__ == '__main__':
-    main(sys.stdin.readlines())
+# if __name__ == '__main__':
+#     main(sys.stdin.readlines())

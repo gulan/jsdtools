@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!python
 
 # The way I usually write it.
 """
@@ -52,29 +52,29 @@ def Scanner(inp):
     
     K = iter(squeeze_blanks(filter_comments(inp) + '$'))
     
-    t = K.next()
+    t = next(K)
     while t != '$': # the $ is my made-up end-of-string token.
         if t == ' ':
-            t = K.next()
+            t = next(K)
         elif t in PUNCT:
             yield t
-            t = K.next()
+            t = next(K)
         else: # keywords and literals are undistinguished
             word = ''
             while t != '$' and t not in PUNCT and t != ' ':
                 word += t
-                t = K.next()
+                t = next(K)
             yield word
     yield '$'
 
-class Parser(object):
+class Parser:
 
     def __init__(self, source):
         self.G = source         # stream of tokens
         self.TOK = None
 
     def get(self):
-        self.TOK = self.G.next()
+        self.TOK = next(self.G)
 
     def expect(self, t):
         m = set(t)
@@ -201,4 +201,4 @@ if __name__ == '__main__':
     b = '(rep name (lit alpha))'
     c = '(seq name [(lit alpha) (lit beta) (lit gamma)])'
     d = '(alt name [(lit alpha) (lit beta) (lit gamma)])'
-    print list(parse_many(a+b+c+d))
+    print (list(parse_many(a+b+c+d)))

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#python
 
 _subdict = {
     'rep': '*\\r',
@@ -38,15 +38,15 @@ def mkdot(target, cluster=False):
             ast_count += 1
         target.send('}\n')
     x = _aux()
-    x.next()
+    next(x)
     return x
 
 def mkprinter():
     def _aux():
         while 1:
-            print (yield),
+            print ((yield), end='')
     printer = _aux()
-    printer.next()
+    next(printer)
     return printer
 
 def render_one(ast):

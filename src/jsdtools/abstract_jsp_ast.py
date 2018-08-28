@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!python
 
 # TBD: children() or children_of() ?
 
@@ -36,7 +36,7 @@ def mkseqno():
 
 seqno = mkseqno()
 
-class Abstract(object):
+class Abstract:
     
     """
     The Concrete AST uses the composite pattern. This Abstract class
@@ -49,7 +49,7 @@ class Abstract(object):
         self.child = []
         self.label = label    # string type
         self.ntype = self.__class__.__name__.lower()
-        self.sn = seqno.next()
+        self.sn = next(seqno)
 
     def __repr__(self): raise NotImplemented
     
@@ -220,20 +220,20 @@ if __name__ == '__main__':
     s = Rep('repX')
     s.add_child(Lit('alpha'))
     
-    print p.labels()
-    print q.labels()
-    print r.labels()
-    print s.labels()
-    print '-' * 40
-    print p.anno()
-    print q.anno()
-    print r.anno()
-    print s.anno()
-    print '-' * 40
-    print p.graph()
-    print q.graph()
-    print r.graph()
-    print s.graph()
+    print (p.labels())
+    print (q.labels())
+    print (r.labels())
+    print (s.labels())
+    print ('-' * 40)
+    print (p.anno())
+    print (q.anno())
+    print (r.anno())
+    print (s.anno())
+    print ('-' * 40)
+    print (p.graph())
+    print (q.graph())
+    print (r.graph())
+    print (s.graph())
 
 
 '(alt alt1 [(lit alpha) (lit beta) (lit gamma)])'
