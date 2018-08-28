@@ -1,8 +1,8 @@
-#/bin/sh
+#! /bin/sh
 
-BD=$HOME/1/jsd-tools
+BD=$HOME/1/jsd-tools/example
 
 rm -f /tmp/account.dot
-./astjsd.py < $BD/account/account.jsd > /tmp/account.dot
+astjsd.py < $BD/account/account.jsd > /tmp/account.dot
 
 diff $BD/account/account.dot /tmp/account.dot
