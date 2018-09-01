@@ -10,7 +10,8 @@ I have an abstract syntax of JSP and several concrete repsentations:
 * Regex
 * Equation
 
-Each of these forms should be organized as separate packages. Each package would have conversion:
+Each of these forms should be organized as separate packages.
+Each package would have conversion:
 
 toAst    :: Concrete -> AST
 fromAst  :: AST -> Concrete
@@ -25,14 +26,15 @@ Lisp-like:
 Some packages only supply one conversion. There is no need to convert dot to ast.
 
 --
-Convert to python3
+add re grouping tests
+X Convert to python3
+X pytest
 github
 pypi
 modern package/install
 travis
 tox
 compare for ast
-pytest
 PEP8
-
+name re subexpressions
 
