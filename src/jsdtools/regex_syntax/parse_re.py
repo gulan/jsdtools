@@ -1,50 +1,34 @@
 #!python
 
-"""
-       G = '(' X ')'
-       X = REP | SEQ | ALT | LIT
-     REP = 'rep'  LABEL G
-    REP1 = 'rep+' LABEL G
-     SEQ = 'seq'  LABEL '[' G+ ']'
-     ALT = 'alt'  LABEL '[' G+ ']'
-     LIT = 'lit'  LITERAL
-
-"""
-
+from itertools import count, cycle
 from jsdtools.abstract_jsp_ast import Rep, Rep1, Alt, Lit, Seq
-# from jsdtools.regex_syntax.scanner_re import Scanner
-from scanner_re import Scanner
-
-"""
-# re = lit | re (dot re)+ | re (bar re)+ | re star | '(' re ')'
-
- regex = lit | nest
-  nest = '(' regex cont ')'
-  cont = '*' | seq | alt
-   seq = step step*
-  step = '.' regex
-   alt = turn turn*
-  turn = '|' regex
-
-"""
+from jsdtools.regex_syntax.scanner_re import Scanner
+# from scanner_re import Scanner
 
 class ParsingError(SyntaxError): pass
 
 class Parser:
 
-    def parse(self, source):
-        print('------------  %s  ------------' % source)
+    def parse(self, source, test_counter = False):
+        # print('------------  %s  ------------' % source)
         self.G = Scanner(source)
         self.token = self.next_token = None
         self.advance()
-        self.start()
-
+        if test_counter:
+            self.count = cycle([0])
+        else:
+            self.count = count(start=1)
+        return self.start()
+    
+    def name(self):
+        return "_%d" % next(self.count)
+    
     def advance(self):
         self.token, self.next_token = self.next_token, next(self.G, None)
 
     def accept(self, toktype):
         if self.next_token and self.next_token[0] == toktype:
-            print('accept>', self.next_token)
+            # print('accept>', self.next_token)
             self.advance()
             return True
         else:
@@ -53,38 +37,6 @@ class Parser:
     def expect(self, t):
         if not self.accept(t):
             raise ParsingError('Expected ' + t)
-        
-class ReParser(Parser):
-    
-    """
-      regex = lit | '(' regex cont ')'
-       cont = '*' | '.' regex ('.' regex)* | '|' regex ('|' regex)*
-    """
-
-    def start(self):
-        return self.regex()
-    
-    def regex(self):
-        if self.accept('lit'):
-            pass
-        else:
-            self.expect('lparen')
-            self.regex()
-            self.cont()
-            self.expect('rparen')
-        
-    def cont(self):
-        if self.accept('star'):
-            pass
-        elif self.accept('dot'):
-            self.regex()
-            while self.accept('dot'):
-                self.regex()
-        else:
-            self.expect('bar')
-            self.regex()
-            while self.accept('bar'):
-                self.regex()
 
 class RegexParser(Parser):
     """    
@@ -94,39 +46,60 @@ class RegexParser(Parser):
     xxx = lit  |  '(' alt ')'
     """
 
-    def start(self): self.alt()
+    def start(self):
+        return self.alt()
     
     def alt(self):
-        self.seq()
+        m = []
+        first = ast = self.seq()
+        m.append(ast)
         while self.accept('bar'):
-            self.seq()
+            ast = self.seq()
+            m.append(ast)
+        if len(m) > 1:
+            n = Alt(self.name())
+            for i in m:
+                n.add_child(i)
+            return n
+        else:
+            return first
     
     def seq(self):
-        self.rep()
+        m = []
+        first = ast = self.rep()
+        m.append(ast)
         while self.accept('dot'):
-            self.rep()
+            ast = self.rep()
+            m.append(ast)
+        if len(m) > 1:
+            n = Seq(self.name())
+            for i in m:
+                n.add_child(i)
+            return n
+        else:
+            return first
             
     def rep(self):
-        self.xxx()
+        ast = self.xxx()
+        c = 0
         while self.accept('star'):
-            pass
+            c += 1
+        if c > 0:
+            n = Rep(self.name())
+            n.add_child(ast)
+            return n
+        else:
+            return ast
     
     def xxx(self):
         if self.accept('lit'):
-            pass
+            return Lit(self.token[1])
         else:
             self.expect('lparen')
-            self.alt()
+            ast = self.alt()
             self.expect('rparen')
+            return ast
 
-def split_cases(p,tc):
-    for i in tc.split('\n'):
-        if not i: continue
-        if i.startswith('-'):
-            pass
-        else:
-            p.parse(i)
-    
 tc = """
 a
 a*
@@ -142,46 +115,23 @@ a*.b
 (a* . b* .c*)*
 (a . b | c)
 (a | b . c)
+((a))*
+((a)*)*
+((a*)*)*
+((a.b)*)*
 """
 
-split_cases(RegexParser(), tc)
+if __name__ == '__main__':
+    
+    def split_cases(p,tc):
+        for i in tc.split('\n'):
+            if not i: continue
+            if i.startswith('-'):
+                pass
+            else:
+                print (repr(i))
+                ast = p.parse(i, test_counter=True)
+                print (ast)
+    
 
-print('ok')
-
-
-
-tc_for_reparser = """
-a
-A
--|
-(a*)
-(a|b)
-(a|b|c)
-(a|(b*))
-(a . (b*) . (c | d))
-"""
-
-"""
-alt = alt '|' seq  |  seq
-seq = seq '.' rep  |  rep
-rep = rep '*'  |  xxx
-xxx = lit  |  '(' alt ')'
-
-alt                                       :  x
-seq ('|' seq)*                            :  x
-(rep ('.' rep)*) ('|' seq)*               :  x
-((xxx ('*')*) ('.' rep)*) ('|' seq)*      :  x
-((lit ('*')*) ('.' rep)*) ('|' seq)*      :  x
-(('*')* ('.' rep)*) ('|' seq)*            :  
-('.' rep)* ('|' seq)*                     :  
-('|' seq)*                                :  
-                                          :  
-
-alt     :  x
-seq ... :  x
-rep ... :  x
-xxx ... :  x
-lit ... :  x
-        :  
-
-"""
+    split_cases(RegexParser(), tc)
