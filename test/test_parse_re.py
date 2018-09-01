@@ -57,33 +57,66 @@ def test_parse_precedence():
     assert type(p.parse('(a* . b* . c*)')).__name__ == 'Seq'
     
 
-def test_parse_grouping(): pass
+def test_parse_grouping_seq():
+    # TBD: make blackbox
+    p = RegexParser()
+    right = p.parse('a . (b . c)')
+    assert right.ntype == 'seq'
+    assert len(right.child) == 2
+    assert right.child[0].ntype == 'lit'
+    assert right.child[1].ntype == 'seq'
+    
+    left = p.parse('(a . b) . c')
+    assert left.ntype == 'seq'
+    assert len(left.child) == 2
+    assert left.child[0].ntype == 'seq'
+    assert left.child[1].ntype == 'lit'
 
-# def display_tree(r):
-#     p = RegexParser()
-#     ast = p.parse(r)
-#     for (level, _, node, name, _) in ast.walk():
-#         print('    ' * level, node, name)
+def test_parse_grouping_alt():
+    p = RegexParser()
+    right = p.parse('a | (b | c)')
+    assert right.ntype == 'alt'
+    assert len(right.child) == 2
+    assert right.child[0].ntype == 'lit'
+    assert right.child[1].ntype == 'alt'
+    
+    left = p.parse('(a | b) | c')
+    assert left.ntype == 'alt'
+    assert len(left.child) == 2
+    assert left.child[0].ntype == 'alt'
+    assert left.child[1].ntype == 'lit'
 
+def test_parse_grouping_mixed():
+    p = RegexParser()
+    
+    g = p.parse('a . (b | c)')
+    assert g.ntype == 'seq'
+    assert len(g.child) == 2
+    assert g.child[0].ntype == 'lit'
+    assert g.child[1].ntype == 'alt'
+    
+    g = p.parse('(a | b) . c')
+    assert g.ntype == 'seq'
+    assert len(g.child) == 2
+    assert g.child[0].ntype == 'alt'
+    assert g.child[1].ntype == 'lit'
+
+    g = p.parse('a | (b . c)')
+    assert g.ntype == 'alt'
+    assert len(g.child) == 2
+    assert g.child[0].ntype == 'lit'
+    assert g.child[1].ntype == 'seq'
+    
+    g = p.parse('(a . b) | c')
+    assert g.ntype == 'alt'
+    assert len(g.child) == 2
+    assert g.child[0].ntype == 'seq'
+    assert g.child[1].ntype == 'lit'
+    
 # if 1:
 #     p = RegexParser()
-#     print (p.parse('a . (b . c)'))
-#     print (p.parse('(a . b) . c'))
-    
-#     print (p.parse('a | (b | c)'))
-#     print (p.parse('(a | b) | c'))
 
-#     print (p.parse('a . (b | c)'))
-#     print (p.parse('(a | b) . c'))
 
-#     print (p.parse('a | (b . c)'))
-#     print (p.parse('(a . b) | c'))
-
-#     print ('---------')
-#     display_tree('(a | b . c)')
-#     display_tree('(a . b | c)')
-    
-#     # print (Lit('a'))
     
 """    
 
