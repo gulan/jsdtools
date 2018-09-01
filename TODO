@@ -30,6 +30,9 @@ github
 pypi
 modern package/install
 travis
-
+tox
+compare for ast
+pytest
+PEP8
 
 
