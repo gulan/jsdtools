@@ -26,7 +26,9 @@ Lisp-like:
 Some packages only supply one conversion. There is no need to convert dot to ast.
 
 --
-add re grouping tests
+jspre option to write lisp syntax
+X add re grouping tests
+X compare for ast
 X Convert to python3
 X pytest
 github
@@ -34,7 +36,6 @@ pypi
 modern package/install
 travis
 tox
-compare for ast
 PEP8
 name re subexpressions
-
+------
