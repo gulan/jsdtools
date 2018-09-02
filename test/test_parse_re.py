@@ -3,13 +3,21 @@
 from jsdtools.abstract_jsp_ast import (Lit, Seq, Alt, Rep)
 from jsdtools.regex_syntax.parse_re import (ParsingError, RegexParser)
 
-def test_parse_lit():
+def test_parse_lit_repr():
     p =  RegexParser()
     assert repr(p.parse('a')) == repr(Lit('a'))
     assert repr(p.parse('abc')) == repr(Lit('abc'))
     assert repr(p.parse('a_b-c\'')) == repr(Lit('a_b-c\''))
     assert repr(p.parse('123')) == repr(Lit('123'))
     assert repr(p.parse('_')) == repr(Lit('_'))
+    
+def test_parse_lit_eq():
+    p =  RegexParser()
+    assert p.parse('a') == Lit('a')
+    assert p.parse('abc') == Lit('abc')
+    assert p.parse('a_b-c\'') == Lit('a_b-c\'')
+    assert p.parse('123') == Lit('123')
+    assert p.parse('_') == Lit('_')
     
 def test_parse_rep():
     p = RegexParser()
@@ -22,6 +30,9 @@ def test_parse_rep():
     assert repr(parse('a*')) == repr(mkrep(Lit('a')))
     assert repr(parse('abc*')) == repr(mkrep(Lit('abc')))
     assert repr(parse('a**')) == repr(mkrep(Lit('a'))) # my hackish optimization
+    assert parse('a*') == mkrep(Lit('a'))
+    assert parse('abc*') == mkrep(Lit('abc'))
+    assert parse('a**') == mkrep(Lit('a')) # my hackish optimization
     
 def test_parse_seq():
     p = RegexParser()
@@ -34,6 +45,8 @@ def test_parse_seq():
         return r
     assert repr(parse('a . b')) == repr(mkseq([Lit('a'),Lit('b')]))
     assert repr(parse('a . b . c ')) == repr(mkseq([Lit('a'),Lit('b'),Lit('c')]))
+    assert parse('a . b') == mkseq([Lit('a'),Lit('b')])
+    assert parse('a . b . c ') == mkseq([Lit('a'),Lit('b'),Lit('c')])
     
 def test_parse_alt():
     p = RegexParser()
@@ -46,6 +59,8 @@ def test_parse_alt():
         return r
     assert repr(parse('a | b')) == repr(mkalt([Lit('a'),Lit('b')]))
     assert repr(parse('a | b | c ')) == repr(mkalt([Lit('a'),Lit('b'),Lit('c')]))
+    assert parse('a | b') == mkalt([Lit('a'),Lit('b')])
+    assert parse('a | b | c ') == mkalt([Lit('a'),Lit('b'),Lit('c')])
 
 def test_parse_precedence():
     """ AST nodes of lower precedence are higher in the ast tree. """
@@ -113,6 +128,16 @@ def test_parse_grouping_mixed():
     assert g.child[0].ntype == 'seq'
     assert g.child[1].ntype == 'lit'
     
+def test_parse_grouping_nested():
+    p = RegexParser()
+    assert p.parse('(a)') == p.parse('a')
+    assert p.parse('((a))') == p.parse('a')
+    assert p.parse('(a.b)') == p.parse('a.b')
+    assert p.parse('(a.(b))') == p.parse('a.b')
+    assert p.parse('(a|b)') == p.parse('a|b')
+    assert p.parse('(a|(b))') == p.parse('a|b')
+    assert p.parse('((a)*)') == p.parse('a*')
+
 # if 1:
 #     p = RegexParser()
 

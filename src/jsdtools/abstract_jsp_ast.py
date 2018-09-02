@@ -52,6 +52,11 @@ class Abstract:
         self.sn = next(seqno)
 
     def __repr__(self): raise NotImplemented
+
+    def __eq__(self, other):
+        return (self.ntype == other.ntype and
+                self.label == other.label and
+                self.child == other.child)
     
     def anno(self):
         """The compound nodes (alt and rep) are shown on the output
