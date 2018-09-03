@@ -27,6 +27,9 @@ Some packages only supply one conversion. There is no need to convert dot to ast
 
 --
 jspre option to write lisp syntax
+- to complement, add ast -> regex to astjsd.py
+- made render api more uniform and concise
+- 
 X add re grouping tests
 X compare for ast
 X Convert to python3

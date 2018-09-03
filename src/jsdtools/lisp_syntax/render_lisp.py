@@ -6,7 +6,6 @@ Serialize the ast to the lisp-like form of jsp.
 """
 
 import sys
-# from parse_lisplike_jsp import Scanner, Parser
 
 def printer():
     def aux():
@@ -24,7 +23,7 @@ def printer():
                 print ()
             else:
                 spacer = ' ' * indent
-                print (spacer+cmd, end='')
+                print (spacer + cmd, end='')
     g = aux()
     next(g)
     return g
@@ -60,14 +59,6 @@ def walk(printer, ast, level=0):
     printer.send(s)
     printer.send('newline')
 
-
-# def main(data):
-#     t = Parser(Scanner(data))
-#     t.get()
-#     ast = t.parse()
-#     p = printer()
-#     walk(p, ast)
-        
-
-# if __name__ == '__main__':
-#     main(sys.stdin.readlines())
+def print_ast(ast):
+    p = printer()
+    walk(p, ast)

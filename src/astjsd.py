@@ -1,25 +1,38 @@
 #!python
 
-# Lang extension to give coorsp.
-
+import argparse
 import sys
-from jsdtools.lisp_syntax.parse_lisp import Scanner, Parser
+from jsdtools.lisp_syntax.parse_lisp import parse_many
 from jsdtools.dot_syntax.render_dot import mkdot, mkprinter
+from jsdtools.regex_syntax.render_re import print_ast
 
-def main(data):
+def dot_out(inp):
     dot = mkdot(mkprinter())
-    t = Parser(Scanner(data))
-    t.get()
-    while t.TOK != '$':
-        ast = t.parse()
+    for ast in parse_many(inp):
         dot.send(ast)
-        t.get()
     dot.close()
-    
+
+def regex_out(lines):
+    m = [ast for ast in parse_many(lines)]
+    for i in m:
+        print_ast(i)
+
 
 if __name__ == '__main__':
-    main(sys.stdin.readlines())
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-y', '--syntax', default='dot')
+    args = parser.parse_args()
+    if args.syntax == 'dot':
+        lines = sys.stdin.readlines()
+        dot_out(lines)
+    elif args.syntax == 'regex':
+        lines = sys.stdin.readlines()
+        regex_out(lines)
+    else:
+        print ("bad syntax option: %r" % args.syntax, file=sys.stderr)
+        sys.exit(-1)
+    
 
-# cat account/account.jsd |./astjsd.py |dot -T pdf >/tmp/account.pdf ; evince /tmp/account.pdf
+# cat example/account/account.jsd |./astjsd.py |dot -T pdf >/tmp/account.pdf ; evince /tmp/account.pdf
 
 

@@ -53,7 +53,7 @@
         (lit -)])])
 
 (rep soldier-career-training 
-    (seq cource<c> [
+    (seq course<c> [
         (lit enrol<c>)
         (lit complete<c>)
         (alt possible-repeat<c> [

@@ -8,6 +8,7 @@ TAG = {'.' : 'dot',
        '*' : 'star',
        '(' : 'lparen',
        ')' : 'rparen'}
+
 PUNCT = frozenset(TAG.keys())
 CHARS = frozenset(string.ascii_letters + "-_'" + string.digits)
 VALID = PUNCT | CHARS 
@@ -23,7 +24,6 @@ def Scanner(inp):
 
     def read():
         t = next(K, None)
-        # print ('>> ', t)
         return t
 
     t = read()
@@ -58,7 +58,6 @@ def demo():
     see('a1 . d1* g|h1 (w . v) ')
     see('.|*()')
     see("A BC 2 34 D_E G-F a'")
-    # see('+')
 
 if __name__ == '__main__':
     demo()
