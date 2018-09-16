@@ -1,4 +1,4 @@
-#python
+#!python
 
 _subdict = {
     'rep': '*\\r',
