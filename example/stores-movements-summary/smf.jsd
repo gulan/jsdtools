@@ -6,4 +6,3 @@
 	     (lit receipt)])))
 
 (rep report (lit summary-line))
-

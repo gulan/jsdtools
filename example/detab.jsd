@@ -19,4 +19,3 @@
 #        INPUT = (seq input [CONTENT (lit eof)])
 
 (seq input [(rep content (seq line [(rep segment-body (alt segment-type [(rep full (lit non-tab)) (seq brief [(rep short (lit non-tab)) (lit tab)])])) (seq final [(rep short (lit non-tab)) (lit newline)])])) (lit eof)])
-

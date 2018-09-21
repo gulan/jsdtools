@@ -82,4 +82,3 @@ def test_eq():
 #     print (q.graph())
 #     print (r.graph())
 #     print (s.graph())
-

@@ -34,5 +34,3 @@ if __name__ == '__main__':
     
 
 # cat example/account/account.jsd |./astjsd.py |dot -T pdf >/tmp/account.pdf ; evince /tmp/account.pdf
-
-

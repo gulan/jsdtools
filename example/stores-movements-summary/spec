@@ -79,6 +79,3 @@ As in account example, we need to factor-out the sequence.
 
     cus-group~ecus-group = c-group*
     c-group = cus-group . ecus-group
-
-
-

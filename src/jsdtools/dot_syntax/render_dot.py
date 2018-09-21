@@ -53,4 +53,3 @@ def render_one(ast):
     dot = mkdot(mkprinter())
     dot.send(ast)
     dot.close()
-

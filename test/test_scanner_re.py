@@ -50,4 +50,3 @@ def test_scan():
         ('lit', 'D_E'),
         ('lit', 'G-F'),
         ('lit', "a'")]
-         

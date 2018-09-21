@@ -17,5 +17,3 @@ echo $same
 # differs in spacing and with redundant parenthesizes. So (1) is
 # almost identity. The second time with (2), really is a literal
 # identity.
-
-

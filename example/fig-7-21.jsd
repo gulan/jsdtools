@@ -2,4 +2,3 @@
     (seq period [
         (lit meet) 
         (rep work (lit award))]))
-
