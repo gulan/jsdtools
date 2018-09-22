@@ -51,34 +51,3 @@ def test_eq():
     rr1 = Rep('rr')
     rr1.add_child(aa1)
     assert rr0 == rr1
-    
-# if __name__ == '__main__':
-#     p = Lit('alpha')
-    
-#     q = Seq('seq1')
-#     q.add_child(Lit('alpha'))
-#     q.add_child(Lit('beta'))
-#     q.add_child(Lit('gamma'))
-    
-#     r = Alt('alt1')
-#     r.add_child(Lit('alpha'))
-#     r.add_child(Lit('beta'))
-#     r.add_child(Lit('gamma'))
-    
-#     s = Rep('repX')
-#     s.add_child(Lit('alpha'))
-    
-#     print (p.labels())
-#     print (q.labels())
-#     print (r.labels())
-#     print (s.labels())
-#     print ('-' * 40)
-#     print (p.anno())
-#     print (q.anno())
-#     print (r.anno())
-#     print (s.anno())
-#     print ('-' * 40)
-#     print (p.graph())
-#     print (q.graph())
-#     print (r.graph())
-#     print (s.graph())

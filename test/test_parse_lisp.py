@@ -54,11 +54,3 @@ def test_parse_many():
     expect = [a,b,c,d]
     actual = list(parse_many(''.join(expect)))
     assert list(map(repr, actual)) == expect
-         
-
-# if __name__ == '__main__':
-#     a = '(lit alpha)'
-#     b = '(rep name (lit alpha))'
-#     c = '(seq name [(lit alpha) (lit beta) (lit gamma)])'
-#     d = '(alt name [(lit alpha) (lit beta) (lit gamma)])'
-#     print (list(parse_many(a+b+c+d)))

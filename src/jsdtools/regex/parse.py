@@ -98,39 +98,3 @@ class RegexParser(Parser):
             ast = self.alt()
             self.expect('rparen')
             return ast
-
-tc = """
-a
-a*
-a**
-(a)
-a | b
-a | b | c
-a.b.c
-a*|b
-a|b*
-a*.b
-(a* . b* .c*)
-(a* . b* .c*)*
-(a . b | c)
-(a | b . c)
-((a))*
-((a)*)*
-((a*)*)*
-((a.b)*)*
-"""
-
-if __name__ == '__main__':
-    
-    def split_cases(p,tc):
-        for i in tc.split('\n'):
-            if not i: continue
-            if i.startswith('-'):
-                pass
-            else:
-                print (repr(i))
-                ast = p.parse(i, test_counter=True)
-                print (ast)
-    
-
-    split_cases(RegexParser(), tc)

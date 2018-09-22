@@ -58,6 +58,3 @@ def demo():
     see('a1 . d1* g|h1 (w . v) ')
     see('.|*()')
     see("A BC 2 34 D_E G-F a'")
-
-if __name__ == '__main__':
-    demo()

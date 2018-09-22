@@ -185,9 +185,7 @@ class Alt(Compound):
 
     def children(self): return ' '.join(repr(c) for c in self.child)
 
-# TBD: do not use lisp syntax for repr()
-    
-if __name__ == '__main__':
+def demo():
     p = Lit('alpha')
     
     q = Seq('seq1')
@@ -217,7 +215,3 @@ if __name__ == '__main__':
     print (q.graph())
     print (r.graph())
     print (s.graph())
-
-
-'(alt alt1 [(lit alpha) (lit beta) (lit gamma)])'
-'(rep repX (lit alpha))'
