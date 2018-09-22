@@ -1,0 +1,114 @@
+#! /bin/sh
+
+qwtree () {
+    tree -I '__pycache__|2|37|build|dist|*.pyc|*egg-info|*~|my__*' $1
+}
+
+
+qwfind () {
+    exclude='(.arc|36|37|my__|.git|cache|./dist|./build|~|egg-info|.gif)'
+    find . |egrep -v $exclude |sed 's!\./!!'
+}
+
+qwdemo () {
+    read a
+    while test -n "$a"
+    do
+	echo $a
+	read a
+    done 
+}
+
+qwdemo1 () {
+ ls | sort |
+ while read file
+ do
+   echo $file
+ done
+}
+
+qwheader () {
+#    cat >/dev/fd/1 <<'EOF'
+    cat <<'EOF'
+if [ "X$QWMODE" = Xtest ]
+then
+    SAVEPWD=$(pwd)
+    dest=$(mktemp -d)
+    cd $dest
+fi
+
+EOF
+}
+
+qwtrailer () {
+    cat <<'EOF'
+if [ "X$QWMODE" = Xtest ]
+then
+    SAVEPATH=$PATH
+    PATH=$SYSBIN
+    python3 -m venv py
+    SAVEPS1=$PS1
+    source py/bin/activate
+    pip install pytest
+    python setup.py install
+    pytest
+    deactivate
+    PS1=$SAVEPS1
+    PATH=$SAVEPATH
+    echo "Return from $dest"
+    cd $SAVEPWD
+fi
+EOF
+}
+
+qwbody () {
+    qwfind |
+	while read file
+	do
+	    if [ -f $file ]
+	    then
+		# printf "\n"
+		printf "echo '# # # # #  %s  # # # # #'\n" $file
+		echo "mkdir -p $(dirname $file)"
+		printf "cat >%s <<'EOFEOF'\n" $file
+		cat $file
+		printf "EOFEOF\n\n"
+	    fi
+	done
+}
+
+qwarc () {
+    qwheader
+    qwbody
+    qwtrailer
+}
+
+
+# qwheader () {
+#     printf 'echo $HMODE\n'
+#     printf 'SAVEPWD=$(pwd)\n'
+#     printf 'dest=$(mktemp -d)\n'
+#     printf 'cd $dest\n'
+#     printf '\n'
+# }
+
+# qwtrailer () {
+#     printf 'SAVEPATH=$PATH\n'
+#     printf 'PATH=$SYSBIN\n'
+    
+#     printf '\n'
+#     printf 'python3 -m venv py\n'
+#     printf 'SAVEPS1=$PS1\n'
+#     printf 'source py/bin/activate\n'
+#     printf 'pip install pytest\n'
+#     printf 'python setup.py install\n'
+#     printf 'pytest\n'
+    
+#     printf '\n'
+#     printf 'deactivate\n'
+#     printf 'PS1=$SAVEPS1\n'
+#     printf 'PATH=$SAVEPATH\n'
+#     printf 'echo "Return from $dest"\n'
+#     printf 'cd $SAVEPWD\n'
+# }
+
