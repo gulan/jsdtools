@@ -9,8 +9,10 @@ dist
 my_*
 2/
 3/
+36/
 37/
 *.egg-info/
 *.dot
 .pytest_cache/
+.arc
 
