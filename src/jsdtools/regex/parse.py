@@ -1,8 +1,8 @@
 #!python
 
-from itertools import count, cycle
-from .. abstract_jsp_ast import Rep, Rep1, Alt, Lit, Seq
-from . scanner_re import Scanner
+from itertools import (count, cycle)
+from .. ast import (Rep, Rep1, Alt, Lit, Seq)
+from . scan import Scanner
 
 class ParsingError(SyntaxError): pass
 

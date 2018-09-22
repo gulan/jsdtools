@@ -2,8 +2,8 @@
 
 import argparse
 import sys
-from jsdtools.regex_syntax.parse_re import RegexParser
-from jsdtools.lisp_syntax.render_lisp import print_ast
+from jsdtools.regex.parse import RegexParser
+from jsdtools.lisp.render import print_ast
 
 """
 This script takes an argument string in jsp regex form. Stdin is not

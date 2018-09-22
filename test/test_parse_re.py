@@ -1,7 +1,7 @@
 #!python
 
-from jsdtools.abstract_jsp_ast import (Lit, Seq, Alt, Rep)
-from jsdtools.regex_syntax.parse_re import (ParsingError, RegexParser)
+from jsdtools.ast import (Lit, Seq, Alt, Rep)
+from jsdtools.regex.parse import (ParsingError, RegexParser)
 
 def test_parse_lit_repr():
     p =  RegexParser()

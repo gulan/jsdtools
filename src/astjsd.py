@@ -2,9 +2,9 @@
 
 import argparse
 import sys
-from jsdtools.lisp_syntax.parse_lisp import parse_many
-from jsdtools.dot_syntax.render_dot import mkdot, mkprinter
-from jsdtools.regex_syntax.render_re import print_ast
+from jsdtools.lisp.parse import parse_many
+from jsdtools.dot.render import mkdot, mkprinter
+from jsdtools.regex.render import print_ast
 
 def dot_out(inp):
     dot = mkdot(mkprinter())

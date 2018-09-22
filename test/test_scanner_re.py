@@ -1,6 +1,6 @@
 #!python
 
-from jsdtools.regex_syntax.scanner_re import Scanner
+from jsdtools.regex.scan import Scanner
 
 def test_scan():
     

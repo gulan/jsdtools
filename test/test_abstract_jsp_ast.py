@@ -1,6 +1,6 @@
 #!python
 
-from jsdtools.abstract_jsp_ast import (Lit, Seq, Alt, Rep)
+from jsdtools.ast import (Lit, Seq, Alt, Rep)
 
 def test_repr_lit():
     assert repr(Lit('alpha')) == '(lit alpha)'

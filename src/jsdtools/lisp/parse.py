@@ -34,7 +34,7 @@ rep customers:
     LIT = 'lit' . LITERAL'
 """
 
-from .. abstract_jsp_ast import Rep, Rep1, Alt, Lit, Seq
+from .. ast import (Rep, Rep1, Alt, Lit, Seq)
 import re
 
 def Scanner(inp):

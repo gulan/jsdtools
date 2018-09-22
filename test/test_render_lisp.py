@@ -1,5 +1,5 @@
 #!python
 
-from jsdtools.lisp_syntax.render_lisp import (printer, walk)
+from jsdtools.lisp.render import (printer, walk)
 
 def test_xxx(): pass
