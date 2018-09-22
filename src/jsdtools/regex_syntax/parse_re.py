@@ -1,9 +1,8 @@
 #!python
 
 from itertools import count, cycle
-from jsdtools.abstract_jsp_ast import Rep, Rep1, Alt, Lit, Seq
-from jsdtools.regex_syntax.scanner_re import Scanner
-# from scanner_re import Scanner
+from .. abstract_jsp_ast import Rep, Rep1, Alt, Lit, Seq
+from . scanner_re import Scanner
 
 class ParsingError(SyntaxError): pass
 
@@ -25,7 +24,7 @@ class Parser:
     
     def advance(self):
         self.token, self.next_token = self.next_token, next(self.G, None)
-
+	
     def accept(self, toktype):
         if self.next_token and self.next_token[0] == toktype:
             # print('accept>', self.next_token)
