@@ -41,8 +41,10 @@ class RegexParser(Parser):
     """    
     alt = seq ('|' seq)*
     seq = rep ('.' rep)*
-    rep = xxx ('*')*
-    xxx = lit  |  '(' alt ')'
+    rep = trm ('*')*
+    trm = exp [':' lit]
+    exp = lit | sub
+    sub = '(' alt ')'
     """
 
     def start(self):
@@ -79,7 +81,7 @@ class RegexParser(Parser):
             return first
             
     def rep(self):
-        ast = self.xxx()
+        ast = self.trm()
         c = 0
         while self.accept('star'):
             c += 1
@@ -89,12 +91,23 @@ class RegexParser(Parser):
             return n
         else:
             return ast
-    
-    def xxx(self):
+        
+    def trm(self):
+        ast = self.exp()
+        if self.accept('colon'):
+            self.advance()
+            label = self.token[1]
+            ast.label = label
+        return ast
+        
+    def exp(self):
         if self.accept('lit'):
             return Lit(self.token[1])
         else:
-            self.expect('lparen')
-            ast = self.alt()
-            self.expect('rparen')
-            return ast
+            return self.sub()
+        
+    def sub(self):
+        self.expect('lparen')
+        ast = self.alt()
+        self.expect('rparen')
+        return ast

@@ -6,6 +6,7 @@ import string
 TAG = {'.' : 'dot',
        '|' : 'bar',
        '*' : 'star',
+       ':' : 'colon',
        '(' : 'lparen',
        ')' : 'rparen'}
 
@@ -57,4 +58,5 @@ def demo():
     see('abc def ghi')
     see('a1 . d1* g|h1 (w . v) ')
     see('.|*()')
+    see('a . B:(x | y) . c')
     see("A BC 2 34 D_E G-F a'")
