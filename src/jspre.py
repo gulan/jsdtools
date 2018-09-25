@@ -80,18 +80,27 @@ def parse_input(r, subs):
     ast.relabel(subs)
     return ast
     
-def display_tree(r, subs):
-    ast = parse_input(r,subs)
-    for (level, _, node, name, _) in ast.walk():
-        if node == 'lit':
-            print('    ' * level, name)
-        else:
-            print('    ' * level, node, name+':')
+def display_tree(rs, subs):
+    outputs = []
+    p = RegexParser()
+    for r in rs:
+        ast = parse_input(r,subs)
+        for (level, _, node, name, _) in ast.walk():
+            indent = '    ' * level
+            if node == 'lit':
+                out = indent + name
+            else:
+                out = indent + node + ' ' + name + ':'
+            outputs.append(out)
+    for p in outputs:
+        print (p)
     return
 
-def display_lisp(r, subs):
-    ast = parse_input(r,subs)
-    print_ast(ast)
+def display_lisp(rs, subs):
+    p = RegexParser()
+    for r in rs:
+        ast = p.parse(r,subs)
+        print_ast(ast)
     return
 
 def display_dot(rs, subs):
@@ -118,9 +127,9 @@ if __name__ == '__main__':
         keys = ["_%d" % i for i in range(1,len(labels)+1)]
         subs = dict(zip(keys, labels))
     if args.syntax == 'tree':
-        display_tree(args.regex[0], subs)
+        display_tree(args.regex, subs)
     elif args.syntax == 'lisp':
-        display_lisp(args.regex[0], subs)
+        display_lisp(args.regex, subs)
     elif args.syntax == 'dot':
         display_dot(args.regex, subs)
     else:
