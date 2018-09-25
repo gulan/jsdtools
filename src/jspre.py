@@ -4,6 +4,7 @@ import argparse
 import sys
 from jsdtools.regex.parse import RegexParser
 from jsdtools.lisp.render import print_ast
+from jsdtools.dot.render import mkdot, mkprinter
 
 """
 This script takes an argument string in jsp regex form. Stdin is not
@@ -73,10 +74,14 @@ command-line. Not even a text editor was used.
 
 """
 
-def display_tree(r, subs):
+def parse_input(r, subs):
     p = RegexParser()
     ast = p.parse(r)
     ast.relabel(subs)
+    return ast
+    
+def display_tree(r, subs):
+    ast = parse_input(r,subs)
     for (level, _, node, name, _) in ast.walk():
         if node == 'lit':
             print('    ' * level, name)
@@ -85,10 +90,15 @@ def display_tree(r, subs):
     return
 
 def display_lisp(r, subs):
-    p = RegexParser()
-    ast = p.parse(r)
-    ast.relabel(subs)
+    ast = parse_input(r,subs)
     print_ast(ast)
+    return
+
+def display_dot(r, subs):
+    ast = parse_input(r,subs)
+    dot = mkdot(mkprinter())
+    dot.send(ast)
+    dot.close()
     return
 
 
@@ -108,6 +118,8 @@ if __name__ == '__main__':
         display_tree(args.regex, subs)
     elif args.syntax == 'lisp':
         display_lisp(args.regex, subs)
+    elif args.syntax == 'dot':
+        display_dot(args.regex, subs)
     else:
         print ("bad syntax option: %r" % args.syntax, file=sys.stderr)
         sys.exit(-1)
