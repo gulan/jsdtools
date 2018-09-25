@@ -94,10 +94,13 @@ def display_lisp(r, subs):
     print_ast(ast)
     return
 
-def display_dot(r, subs):
-    ast = parse_input(r,subs)
+def display_dot(rs, subs):
     dot = mkdot(mkprinter())
-    dot.send(ast)
+    p = RegexParser()
+    for r in rs:
+        ast = p.parse(r)
+        ast.relabel(subs)
+        dot.send(ast)
     dot.close()
     return
 
@@ -106,7 +109,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-l', '--labels', default='')
     parser.add_argument('-y', '--syntax', default='tree')
-    parser.add_argument('regex')
+    parser.add_argument('regex', nargs='+')
     args = parser.parse_args()
     labels = args.labels.split(',')
     if labels[0] == '':
@@ -115,9 +118,9 @@ if __name__ == '__main__':
         keys = ["_%d" % i for i in range(1,len(labels)+1)]
         subs = dict(zip(keys, labels))
     if args.syntax == 'tree':
-        display_tree(args.regex, subs)
+        display_tree(args.regex[0], subs)
     elif args.syntax == 'lisp':
-        display_lisp(args.regex, subs)
+        display_lisp(args.regex[0], subs)
     elif args.syntax == 'dot':
         display_dot(args.regex, subs)
     else:
