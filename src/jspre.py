@@ -13,12 +13,6 @@ read.
 Depending on the --syntax option, The regex is translated to an
 alternate syntax.
 
-Since the regex form has no way to name non-leaf nodes of an ast, the
-internal labels are, by default, generated.
-
-These default labels may be replaced with explict labels provided with
-the --label option.
-
 Example of Iterative Refinement
 -------------------------------
 
@@ -38,7 +32,7 @@ $ jspre.py '(invest . (pay-in | withdraw)* . terminate)'
 
 (2) Supply more labels to replace the generated _1, _2 and _3.
 
-$ jspre.py -l 'movement,activity,customer' '(invest . (pay-in | withdraw)* . terminate)'
+$ jspre.py '(invest . ((pay-in | withdraw):movement*):activity . terminate):customer'
 
  seq customer:
      invest
@@ -48,52 +42,85 @@ $ jspre.py -l 'movement,activity,customer' '(invest . (pay-in | withdraw)* . ter
              withdraw
      terminate
 
-(3) Looks good. So now convert the same expression into my standard ast form.
+(3) Looks good. So now convert the same expression graphviz dot language.
 
-$ jspre.py -y lisp -l 'movement,activity,customer' '(invest . (pay-in | withdraw)* . terminate)' | tee out.jsd
+$ jspre.py -y dot '(invest . ((pay-in | withdraw):movement*):activity . terminate):customer'
 
-(seq customer [
- (lit invest )
- (rep activity
-  (alt movement [
-   (lit pay-in   )
-   (lit withdraw   )
-  ])
- )
- (lit terminate )
-])
+digraph fig7 {
+  node [shape=rect]
+  edge [dir=none]
+  subgraph compound1 {
+    16 [label="customer"]
+    10 [label=".\rinvest"]
+    14 [label=".\ractivity"]
+    13 [label="*\rmovement"]
+    11 [label="o\rpay-in"]
+    12 [label="o\rwithdraw"]
+    15 [label=".\rterminate"]
+    13 -> {11 12}
+    14 -> {13}
+    16 -> {10 14 15}
+  }
+}
 
-(4) This saved out.jsp file can now be processed by astjsp.py to get a pdf.
+(4) The output can be piped into dot to get a pdf.
 
-$ astjsd.py <out.jsd |dot -T pdf -o out.pdf
+$ jspre.py -y dot ... |dot -T pdf -o customer.pdf
 
 Note how I started from scratch, performed a sequence of small
 elaborations and finished with a nice pdf, all from the
 command-line. Not even a text editor was used.
-
-
 """
 
-def parse_input(r, subs):
-    p = RegexParser()
-    ast = p.parse(r)
-    ast.relabel(subs)
-    return ast
-    
+def side_by_side():
+    def _aux():
+        doclist = []
+        margins = []
+        while 1:
+            try:
+                doc = (yield)
+            except GeneratorExit:
+                break
+            doclist.append(doc)
+            maxlen = max(len(m) for m in doc)
+            margins.append(maxlen)
+
+        maxhigh = max(len(m) for m in doclist)
+            
+        doclist1 = []
+        for (inx,doc) in enumerate(doclist):
+            m = margins[inx]
+            doc1 = []
+            for line in doc:
+                doc1.append(line.ljust(m))
+            short = maxhigh - len(doc)
+            for _ in range(short):
+                doc1.append(''.ljust(m))
+            doclist1.append(doc1)
+            
+        for vec in zip(*doclist1):
+            print (' | '.join(vec))
+
+    g = _aux()
+    next(g)
+    return g
+
 def display_tree(rs, subs):
     outputs = []
+    g = side_by_side()
     p = RegexParser()
     for r in rs:
-        ast = parse_input(r,subs)
+        doc = []
+        ast = p.parse(r,subs)
         for (level, _, node, name, _) in ast.walk():
             indent = '    ' * level
             if node == 'lit':
-                out = indent + name
+                line = indent + name
             else:
-                out = indent + node + ' ' + name + ':'
-            outputs.append(out)
-    for p in outputs:
-        print (p)
+                line = indent + node + ' ' + name + ':'
+            doc.append(line)
+        g.send(doc)
+    g.close()
     return
 
 def display_lisp(rs, subs):
@@ -116,16 +143,17 @@ def display_dot(rs, subs):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-l', '--labels', default='')
+    # parser.add_argument('-l', '--labels', default='')
     parser.add_argument('-y', '--syntax', default='tree')
     parser.add_argument('regex', nargs='+')
     args = parser.parse_args()
-    labels = args.labels.split(',')
-    if labels[0] == '':
-        subs = dict()
-    else:
-        keys = ["_%d" % i for i in range(1,len(labels)+1)]
-        subs = dict(zip(keys, labels))
+    # labels = args.labels.split(',')
+    # if labels[0] == '':
+    #     subs = dict()
+    # else:
+    #     keys = ["_%d" % i for i in range(1,len(labels)+1)]
+    #     subs = dict(zip(keys, labels))
+    subs = dict()
     if args.syntax == 'tree':
         display_tree(args.regex, subs)
     elif args.syntax == 'lisp':
