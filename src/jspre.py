@@ -143,16 +143,9 @@ def display_dot(rs, subs):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    # parser.add_argument('-l', '--labels', default='')
     parser.add_argument('-y', '--syntax', default='tree')
     parser.add_argument('regex', nargs='+')
     args = parser.parse_args()
-    # labels = args.labels.split(',')
-    # if labels[0] == '':
-    #     subs = dict()
-    # else:
-    #     keys = ["_%d" % i for i in range(1,len(labels)+1)]
-    #     subs = dict(zip(keys, labels))
     subs = dict()
     if args.syntax == 'tree':
         display_tree(args.regex, subs)

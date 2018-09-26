@@ -50,3 +50,52 @@ def test_scan():
         ('lit', 'D_E'),
         ('lit', 'G-F'),
         ('lit', "a'")]
+
+    assert list(Scanner('a:b')) == [
+        ('lit', 'a'),
+        ('colon', ':'),
+        ('lit', 'b')]
+
+    assert list(Scanner('(a):b5')) == [
+        ('lparen', '('),
+        ('lit', 'a'),
+        ('rparen', ')'),
+        ('colon', ':'),
+        ('lit', 'b5')]
+
+    assert list(Scanner('a . b:Q')) == [
+        ('lit', 'a'),
+        ('dot', '.'),
+        ('lit', 'b'),
+        ('colon', ':'),
+        ('lit', 'Q')]
+
+    assert list(Scanner('a . b : Q')) == [
+        ('lit', 'a'),
+        ('dot', '.'),
+        ('lit', 'b'),
+        ('colon', ':'),
+        ('lit', 'Q')]
+
+    assert list(Scanner('(a . b) : Q')) == [
+        ('lparen', '('),
+        ('lit', 'a'),
+        ('dot', '.'),
+        ('lit', 'b'),
+        ('rparen', ')'),
+        ('colon', ':'),
+        ('lit', 'Q')]
+
+    assert list(Scanner('((a*):W | b) : Q')) == [
+        ('lparen', '('),
+        ('lparen', '('),
+        ('lit', 'a'),
+        ('star', '*'),
+        ('rparen', ')'),
+        ('colon', ':'),
+        ('lit', 'W'),
+        ('bar', '|'),
+        ('lit', 'b'),
+        ('rparen', ')'),
+        ('colon', ':'),
+        ('lit', 'Q')]

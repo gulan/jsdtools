@@ -6,7 +6,7 @@ with open("README.rst", "r") as fh:
     
 NAME = 'jsdtools'
 DESCRIPTION = "Tools in support of M. Jackson's JSP/JSD development methods."
-VERSION = '1.4.4'
+VERSION = '1.4.5'
 AUTHOR = 'gulan'
 AUTHOR_EMAIL = 'glen.wilder@gmail.com'
 

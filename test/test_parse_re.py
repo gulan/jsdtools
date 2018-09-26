@@ -137,3 +137,17 @@ def test_parse_grouping_nested():
     assert p.parse('(a|b)') == p.parse('a|b')
     assert p.parse('(a|(b))') == p.parse('a|b')
     assert p.parse('((a)*)') == p.parse('a*')
+
+def test_parse_labels():
+    p = RegexParser()
+    assert p.parse('a').label == 'a'
+    assert p.parse('a:A').label == 'A'
+    assert p.parse('(a):A').label == 'A'
+    assert p.parse('((a)):A').label == 'A'
+    assert p.parse('(a*):A').label == 'A'
+    assert p.parse('(a.b):A').label == 'A'
+    assert p.parse('(a|b):A').label == 'A'
+    assert p.parse('((a:X)*):A').label == 'A'
+    assert p.parse('((a:X).b):A').label == 'A'
+    assert p.parse('(a|(b:X)):A').label == 'A'
+    assert p.parse('(a:A):B').label == 'B'

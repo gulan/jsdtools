@@ -57,16 +57,20 @@ The regular expression form of account.jsd can be recovered by ::
 This regex form makes it easier to see the underlying structure. I can
 also start with the regex syntax to build the LISP form ::
 
-    $ jspre.py -y lisp -l movement,activity,account \
-         '(invest . (payin | withdraw)* . terminate)'
-    
+    $ jspre.py -y lisp \
+      '(invest . ((payin | withdraw):movement*):activity . terminate):account'
+   
     (seq account [
         (lit invest )
         (rep activity
         (alt movement [
             (lit payin)
             (lit withdraw)]))
-        (lit terminate)])
+    (lit terminate)])
+
+    $ jspre.py -y dot \
+      '(invest . ((payin|withdraw):movement*):activity . terminate):account' |\
+      dot -Tpdf -o xxx.pdf    
 
 See the docstring in jspre.py for details.
 
