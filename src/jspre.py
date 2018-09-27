@@ -105,13 +105,13 @@ def side_by_side():
     next(g)
     return g
 
-def display_tree(rs, subs):
+def display_tree(rs):
     outputs = []
     g = side_by_side()
     p = RegexParser()
     for r in rs:
         doc = []
-        ast = p.parse(r,subs)
+        ast = p.parse(r,{})
         for (level, _, node, name, _) in ast.walk():
             indent = '    ' * level
             if node == 'lit':
@@ -123,19 +123,18 @@ def display_tree(rs, subs):
     g.close()
     return
 
-def display_lisp(rs, subs):
+def display_lisp(rs):
     p = RegexParser()
     for r in rs:
-        ast = p.parse(r,subs)
+        ast = p.parse(r, {})
         print_ast(ast)
     return
 
-def display_dot(rs, subs):
+def display_dot(rs):
     dot = mkdot(mkprinter())
     p = RegexParser()
     for r in rs:
         ast = p.parse(r)
-        ast.relabel(subs)
         dot.send(ast)
     dot.close()
     return
@@ -146,13 +145,12 @@ if __name__ == '__main__':
     parser.add_argument('-y', '--syntax', default='tree')
     parser.add_argument('regex', nargs='+')
     args = parser.parse_args()
-    subs = dict()
     if args.syntax == 'tree':
-        display_tree(args.regex, subs)
+        display_tree(args.regex)
     elif args.syntax == 'lisp':
-        display_lisp(args.regex, subs)
+        display_lisp(args.regex)
     elif args.syntax == 'dot':
-        display_dot(args.regex, subs)
+        display_dot(args.regex)
     else:
         print ("bad syntax option: %r" % args.syntax, file=sys.stderr)
         sys.exit(-1)
