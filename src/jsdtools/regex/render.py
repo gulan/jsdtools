@@ -6,7 +6,7 @@ Reduce ast to regex form. Only Lit labels are kept.
 
 import sys
 
-def printer():
+def printer(out=sys.stdout):
     def aux():
         indent = 0
         while 1:
@@ -15,10 +15,10 @@ def printer():
             except GeneratorExit:
                 break
             if cmd == 'newline':
-                print ()
+                print (file=out)
             else:
                 spacer = ''
-                print (spacer + cmd, end='')
+                print (spacer + cmd, end='', file=out)
     g = aux()
     next(g)
     return g
