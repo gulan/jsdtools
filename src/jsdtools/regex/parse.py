@@ -80,17 +80,25 @@ class RegexParser(Parser):
         else:
             return first
             
+    # def rep(self):
+    #     ast = self.trm()
+    #     c = 0
+    #     while self.accept('star'):
+    #         c += 1
+    #     if c > 0:
+    #         n = Rep(self.name())
+    #         n.add_child(ast)
+    #         return n
+    #     else:
+    #         return ast
+        
     def rep(self):
         ast = self.trm()
-        c = 0
         while self.accept('star'):
-            c += 1
-        if c > 0:
-            n = Rep(self.name())
-            n.add_child(ast)
-            return n
-        else:
-            return ast
+            ast1 = Rep(self.name())
+            ast1.add_child(ast)
+            ast = ast1
+        return ast
         
     def trm(self):
         ast = self.exp()
@@ -111,3 +119,14 @@ class RegexParser(Parser):
         ast = self.alt()
         self.expect('rparen')
         return ast
+
+def parse_one(regex):
+    p =  RegexParser()
+    return p.parse(regex)
+
+def parse_many(*regex):
+    p =  RegexParser()
+    for r in regex:
+        yield p.parse(r)
+
+
