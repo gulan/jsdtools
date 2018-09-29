@@ -1,5 +1,7 @@
 #!python
 
+import sys
+
 _subdict = {
     'rep': '*\\r',
     'rep1': '+\\r',
@@ -41,10 +43,10 @@ def mkdot(target, cluster=False):
     next(x)
     return x
 
-def mkprinter():
+def mkprinter(out=sys.stdout):
     def _aux():
         while 1:
-            print ((yield), end='')
+            print ((yield), file=out, end='')
     printer = _aux()
     next(printer)
     return printer
