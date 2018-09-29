@@ -79,18 +79,6 @@ class RegexParser(Parser):
             return n
         else:
             return first
-            
-    # def rep(self):
-    #     ast = self.trm()
-    #     c = 0
-    #     while self.accept('star'):
-    #         c += 1
-    #     if c > 0:
-    #         n = Rep(self.name())
-    #         n.add_child(ast)
-    #         return n
-    #     else:
-    #         return ast
         
     def rep(self):
         ast = self.trm()
