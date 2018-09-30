@@ -1,6 +1,6 @@
 #!python
 
-from jsdtools.lisp.parse import (scan, parse_one, parse_many)
+from jsdtools.lisp import (scan, parse_one, parse_many)
 
 def test_scanner_lit():
     a = scan('(lit alpha)')

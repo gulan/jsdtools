@@ -1,8 +1,8 @@
 #!python
 
 import io
-from jsdtools.regex.render import (printer, walk, print_ast)
-from jsdtools.regex.parse import (ParsingError, RegexParser, parse_one)
+from jsdtools.regex.render import (printer, walk)
+from jsdtools.regex import (parse_one, print_one)
 
 def my_print_ast(ast):
     # render to string with no newline

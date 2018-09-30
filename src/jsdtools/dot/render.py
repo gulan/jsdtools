@@ -1,5 +1,7 @@
 #!python
 
+# TBD: disentagle print_one and print_many
+
 import sys
 
 _subdict = {
@@ -55,3 +57,9 @@ def render_one(ast):
     dot = mkdot(mkprinter())
     dot.send(ast)
     dot.close()
+
+print_one = render_one
+
+def print_many(*ast):
+    raise NotIMplementedError
+

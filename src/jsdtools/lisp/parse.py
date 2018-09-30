@@ -1,5 +1,7 @@
 #!python
 
+# TBD: split-out scanner
+
 # The way I usually write it.
 """
 rep customers:

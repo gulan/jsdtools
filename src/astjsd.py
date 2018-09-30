@@ -1,10 +1,14 @@
 #!python
 
+# This module could renamed as 'lisp_to_x', but it will soon be
+# obsoleted by jsp_syntax.
+
 import argparse
 import sys
-from jsdtools.lisp.parse import parse_many
+
+from jsdtools.lisp import parse_many
 from jsdtools.dot.render import mkdot, mkprinter
-from jsdtools.regex.render import print_ast
+from jsdtools.regex import print_one
 
 def dot_out(inp):
     dot = mkdot(mkprinter())
@@ -15,7 +19,7 @@ def dot_out(inp):
 def regex_out(lines):
     m = [ast for ast in parse_many(lines)]
     for i in m:
-        print_ast(i)
+        print_one(i)
 
 
 if __name__ == '__main__':

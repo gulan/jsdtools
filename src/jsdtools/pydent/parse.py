@@ -1,8 +1,10 @@
 #!python
 
+#TBD: split-out scan, parse*, print*
+#TBD: code in jspre goes to render.
+
 import re
 import sys
-# from jsdtools.ast import *
 from .. ast import (Rep, Alt, Lit, Seq)
 
 """
@@ -163,3 +165,7 @@ def parse_one(source=sys.stdin):
     p = PyformParser()
     ast = p.parse(tokens)
     return ast
+
+def parse_many(source=sys.stdin):
+    raise NotIMplementedError
+

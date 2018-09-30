@@ -1,3 +1,7 @@
 #!python
 
-def print_ast(ast): pass
+def print_one(ast):
+    raise NotImplementedError()
+
+def print_many(*ast):
+    raise NotImplementedError()

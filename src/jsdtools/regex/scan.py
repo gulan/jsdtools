@@ -67,3 +67,6 @@ def demo():
     see('a . b : Q')
     see('(a . b) : Q')
     see('((a*):W | b) : Q')
+
+def scan_one(source):
+    raise NotImplementedError

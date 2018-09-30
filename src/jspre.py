@@ -1,9 +1,12 @@
 #!python
 
+# TBD: tree -> pydent
+# TBD: use package-level exports
+
 import argparse
 import sys
 from jsdtools.regex.parse import RegexParser
-from jsdtools.lisp.render import print_ast
+from jsdtools.lisp import print_one
 from jsdtools.dot.render import mkdot, mkprinter
 
 """
@@ -127,7 +130,7 @@ def display_lisp(rs):
     p = RegexParser()
     for r in rs:
         ast = p.parse(r, {})
-        print_ast(ast)
+        print_one(ast)
     return
 
 def display_dot(rs):

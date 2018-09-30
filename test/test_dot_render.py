@@ -1,5 +1,5 @@
 #!python
 
-from jsdtools.dot.render import (mkdot, mkprinter, render_one)
+from jsdtools.dot import print_one
 
 def test_xxx(): pass

@@ -1,5 +1,9 @@
 #!python
 
+# TBD: add option show labels
+# TBD: pretty print?
+# TBD: the printer abstraction seems forced for this one-liner, expression language.
+
 """
 Reduce ast to regex form. Only Lit labels are kept.
 """
@@ -53,7 +57,10 @@ def walk(printer, ast):
         walk(printer, first)
         printer.send('*')
                 
-def print_ast(ast):
+def print_one(ast):
     p = printer()
     walk(p, ast)
     p.send('newline')
+    
+def print_many(ast):
+    raise NotImplementedError

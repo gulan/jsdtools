@@ -1,3 +1,4 @@
 #!python
 
-def scan_one(source): pass
+def scan_one(source):
+    raise NotImplementedError()

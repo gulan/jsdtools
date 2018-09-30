@@ -1,3 +1,3 @@
 #!python
 
-from .render import render_one
+from .render import (print_one, print_many)

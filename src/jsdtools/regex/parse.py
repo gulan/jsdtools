@@ -1,5 +1,7 @@
 #!python
 
+# TBD: take Scanner invocation out of Parser
+
 from itertools import (count, cycle)
 from .. ast import (Rep, Rep1, Alt, Lit, Seq)
 from . scan import Scanner
@@ -108,13 +110,15 @@ class RegexParser(Parser):
         self.expect('rparen')
         return ast
 
-def parse_one(regex):
-    p =  RegexParser()
-    return p.parse(regex)
+# TBD: 
+    
+def parse_one(source):
+    p = RegexParser()
+    return p.parse(source)
 
-def parse_many(*regex):
-    p =  RegexParser()
-    for r in regex:
+def parse_many(*source):
+    p = RegexParser()
+    for r in source:
         yield p.parse(r)
 
 

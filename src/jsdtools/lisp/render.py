@@ -1,8 +1,10 @@
 #!python
 
+# TBD: Lisp is an expression language, but I am printing like it has
+# statements.
+
 """
 Serialize the ast to the lisp-like form of jsp.
-
 """
 
 import sys
@@ -59,6 +61,9 @@ def walk(printer, ast, level=0):
     printer.send(s)
     printer.send('newline')
 
-def print_ast(ast):
+def print_one(ast):
     p = printer()
     walk(p, ast)
+    
+def print_many(*ast):
+    raise NotImplementedError
