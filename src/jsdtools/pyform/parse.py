@@ -158,8 +158,8 @@ def demo_scan():
     for i in scan():
         print (i)
     
-def demo_parse():
-    tokens = scan()
+def parse_one(source=sys.stdin):
+    tokens = scan(source=source)
     p = PyformParser()
     ast = p.parse(tokens)
-    print (ast)
+    return ast

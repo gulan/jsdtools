@@ -30,4 +30,4 @@ setup(name = NAME,
           'Programming Language :: Python :: 3.6',
           'Topic :: Software Development'
       ],
-      scripts = ['src/astjsd.py','src/jspre.py'])
+      scripts = ['src/astjsd.py','src/jspre.py', 'src/pyform_to_ast.py'])
