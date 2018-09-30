@@ -37,37 +37,7 @@ rep customers:
 """
 
 from .. ast import (Rep, Rep1, Alt, Lit, Seq)
-import re
-
-def Scanner(inp):
-    # Convert `inp` string to sequence of tokens
-    PUNCT = list(iter('()[]'))
-    
-    def filter_comments(text):
-        return ''.join(m for m in text
-                       if not m.startswith('#') and not m.startswith(';'))
-
-    def squeeze_blanks(s):
-        s = s.replace('\t',' ')
-        s = s.replace('\n',' ')
-        return re.sub(r'[ ]+', ' ', s) # leave a space
-    
-    K = iter(squeeze_blanks(filter_comments(inp) + '$'))
-    
-    t = next(K)
-    while t != '$': # the $ is my made-up end-of-string token.
-        if t == ' ':
-            t = next(K)
-        elif t in PUNCT:
-            yield t
-            t = next(K)
-        else: # keywords and literals are undistinguished
-            word = ''
-            while t != '$' and t not in PUNCT and t != ' ':
-                word += t
-                t = next(K)
-            yield word
-    yield '$'
+from .scan import scan_one
 
 class Parser:
 
@@ -131,17 +101,14 @@ class Parser:
         self.expect(')')
         return w
 
-def scan(inp):
-    return list(Scanner(inp))
-
 def parse_one(inp):
-    tokens = Scanner(inp)
+    tokens = scan_one(inp)
     p = Parser(tokens)
     p.get()
     return p.parse()
 
 def parse_many(inp):
-    tokens = Scanner(inp)
+    tokens = scan_one(inp)
     p = Parser(tokens)
     p.get()
     while p.TOK != '$':

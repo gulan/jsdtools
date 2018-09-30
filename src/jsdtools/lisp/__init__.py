@@ -1,5 +1,5 @@
 #!python
 
-from .parse import (scan, parse_one, parse_many)
-# from .parse import scan as scan_one
+from .parse import (parse_one, parse_many)
 from .render import (print_one, print_many)
+from .scan import scan_one
