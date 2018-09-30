@@ -6,7 +6,7 @@ with open("README.rst", "r") as fh:
     
 NAME = 'jsdtools'
 DESCRIPTION = "Tools in support of M. Jackson's JSP/JSD development methods."
-VERSION = '1.5.0'
+VERSION = '1.5.1'
 AUTHOR = 'gulan'
 AUTHOR_EMAIL = 'glen.wilder@gmail.com'
 
@@ -30,4 +30,4 @@ setup(name = NAME,
           'Programming Language :: Python :: 3.6',
           'Topic :: Software Development'
       ],
-      scripts = ['src/astjsd.py','src/jspre.py', 'src/pyform_to_ast.py'])
+      scripts = ['src/astjsd.py','src/jspre.py', 'src/pydent_to_ast.py'])

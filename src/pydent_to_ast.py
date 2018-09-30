@@ -3,7 +3,7 @@
 import argparse
 import sys
 from jsdtools.lisp.render import print_ast
-from jsdtools.pyform.parse import parse_one
+from jsdtools.pydent.parse import parse_one
 
 def display_lisp(source=sys.stdin):
     ast = parse_one(source)
