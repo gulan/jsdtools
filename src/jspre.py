@@ -7,7 +7,7 @@ import argparse
 import sys
 from jsdtools.regex.parse import RegexParser
 from jsdtools.lisp import print_one
-from jsdtools.dot.render import mkdot, mkprinter
+import jsdtools.dot as dot
 
 """
 This script takes an argument string in jsp regex form. Stdin is not
@@ -134,13 +134,9 @@ def display_lisp(rs):
     return
 
 def display_dot(rs):
-    dot = mkdot(mkprinter())
     p = RegexParser()
-    for r in rs:
-        ast = p.parse(r)
-        dot.send(ast)
-    dot.close()
-    return
+    ast_list = [p.parse(r) for r in rs]
+    dot.print_many(*ast_list)
 
 
 if __name__ == '__main__':

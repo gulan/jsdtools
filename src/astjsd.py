@@ -7,14 +7,12 @@ import argparse
 import sys
 
 from jsdtools.lisp import parse_many
-from jsdtools.dot.render import mkdot, mkprinter
+import jsdtools.dot as dot
 from jsdtools.regex import print_one
 
 def dot_out(inp):
-    dot = mkdot(mkprinter())
-    for ast in parse_many(inp):
-        dot.send(ast)
-    dot.close()
+    ast_list = [ast for ast in parse_many(inp)]
+    dot.print_many(*ast_list)
 
 def regex_out(lines):
     m = [ast for ast in parse_many(lines)]

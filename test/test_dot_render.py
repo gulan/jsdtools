@@ -1,5 +1,5 @@
 #!python
 
-from jsdtools.dot import print_one
+import jsdtools.dot as dot
 
 def test_xxx(): pass

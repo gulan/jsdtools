@@ -14,6 +14,10 @@ _subdict = {
 
 def mkdot(target, cluster=False):
     # 'cluster' alters dot's layout behavior.
+    """ mkdot return a coroutine that accepts any number of complete
+    asts. When the source is closed, a single dot file for all ast
+    trees is sent to the output.
+    """
     def _aux():
         target.send('digraph fig7 {\n')
         target.send('  node [shape=rect]\n')
@@ -53,13 +57,14 @@ def mkprinter(out=sys.stdout):
     next(printer)
     return printer
 
-def render_one(ast):
+def print_one(ast):
     dot = mkdot(mkprinter())
     dot.send(ast)
     dot.close()
 
-print_one = render_one
-
 def print_many(*ast):
-    raise NotIMplementedError
+    dot = mkdot(mkprinter())
+    for a in ast:
+        dot.send(a)
+    dot.close()
 
