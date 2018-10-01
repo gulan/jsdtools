@@ -1,70 +1,11 @@
 #!python
 
-#TBD: split-out scan, parse*, print*
-#TBD: code in jspre goes to render.
+# TBD: code in jspre goes to render.
 
-import re
 import sys
+
 from .. ast import (Rep, Alt, Lit, Seq)
-
-"""
-For the scanner, a line begins with 0+ indents.
-It continues with either one word and a newline, or
-two words, a colon and a newline.
-
-Dedent tokens are generated.
-"""
-
-class TokenError(Exception): pass
-
-level = 0
-
-def tokenize(line):
-    global level
-    (lead,more) = re.match(r'([ ]*)(.*)\n', line).groups()
-    
-    if len(lead) % 4 != 0:
-        raise TokenError('bad indent: %r' % line)
-    
-    c = len(lead) // 4
-    if c > level:
-        level += 1
-        yield ('indent', '')
-    elif c < level:
-        drop = level - c
-        level = c
-        for i in range(drop):
-            yield ('dedent', '')
-    
-    words = [w for w in re.split(r'\s+', more) if w != '']
-
-    if len(words) == 3:
-        if words[0] in ('seq', 'alt', 'rep') and words[2] == ':':
-            yield (words[0], '')
-            yield ('lit', words[1])
-            yield ('colon', ':')
-        else:
-            raise TokenError('bad line: %r' % line)
-    elif len(words) == 2:
-        if words[0] in ('seq', 'alt', 'rep') and words[1].endswith(':'):
-            yield (words[0], '')
-            yield ('lit', words[1][:-1])
-            yield ('colon', ':')
-        else:
-            raise TokenError('bad line: %r' % line)
-    elif len(words) == 1:
-        yield ('lit', words[0])
-    else:
-        raise TokenError('too many tokens: %r' % line)
-
-def scan(source=sys.stdin):
-    global level
-    for line in source:
-        for tk in tokenize(line):
-            yield tk
-    while level > 0:
-        yield ('dedent', '')
-        level -= 1
+from .scan import scan_one
 
 class ParsingError(SyntaxError): pass
 
@@ -156,12 +97,8 @@ class PyformParser(Parser):
         ast.add_child(s)
         return ast
 
-def demo_scan():
-    for i in scan():
-        print (i)
-    
 def parse_one(source=sys.stdin):
-    tokens = scan(source=source)
+    tokens = scan_one(source=source)
     p = PyformParser()
     ast = p.parse(tokens)
     return ast

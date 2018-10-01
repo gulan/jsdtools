@@ -77,6 +77,7 @@ command-line. Not even a text editor was used.
 """
 
 def side_by_side():
+    # TBD: move to pydent rendering, but first decouple RegexParser
     def _aux():
         doclist = []
         margins = []

@@ -1,6 +1,5 @@
 #!python
 
-# from jsdtools.lisp import (scan_one, parse_one, parse_many)
 import jsdtools.lisp as lisp
 
 def scan(inp):
