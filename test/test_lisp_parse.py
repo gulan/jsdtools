@@ -1,9 +1,10 @@
 #!python
 
-from jsdtools.lisp import (scan_one, parse_one, parse_many)
+# from jsdtools.lisp import (scan_one, parse_one, parse_many)
+import jsdtools.lisp as lisp
 
 def scan(inp):
-    return list(scan_one(inp))
+    return list(lisp.scan_one(inp))
 
 def test_scanner_lit():
     a = scan('(lit alpha)')
@@ -44,10 +45,10 @@ def test_parse_one():
     b = '(rep name (lit alpha))'
     c = '(seq name [(lit alpha) (lit beta) (lit gamma)])'
     d = '(alt name [(lit alpha) (lit beta) (lit gamma)])'
-    assert repr(parse_one(a)) == a
-    assert repr(parse_one(b)) == b
-    assert repr(parse_one(c)) == c
-    assert repr(parse_one(d)) == d
+    assert repr(lisp.parse_one(a)) == a
+    assert repr(lisp.parse_one(b)) == b
+    assert repr(lisp.parse_one(c)) == c
+    assert repr(lisp.parse_one(d)) == d
     
 def test_parse_many():
     a = '(lit alpha)'
@@ -55,5 +56,5 @@ def test_parse_many():
     c = '(seq name [(lit alpha) (lit beta) (lit gamma)])'
     d = '(alt name [(lit alpha) (lit beta) (lit gamma)])'
     expect = [a,b,c,d]
-    actual = list(parse_many(''.join(expect)))
+    actual = list(lisp.parse_many(''.join(expect)))
     assert list(map(repr, actual)) == expect

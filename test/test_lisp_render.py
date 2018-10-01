@@ -1,5 +1,5 @@
 #!python
 
-from jsdtools.lisp import print_one
+import jsdtools.lisp as lisp
 
 def test_xxx(): pass

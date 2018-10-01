@@ -5,8 +5,9 @@
 
 import argparse
 import sys
+
 from jsdtools.regex.parse import RegexParser
-from jsdtools.lisp import print_one
+import jsdtools.lisp as lisp
 import jsdtools.dot as dot
 
 """
@@ -130,7 +131,7 @@ def display_lisp(rs):
     p = RegexParser()
     for r in rs:
         ast = p.parse(r, {})
-        print_one(ast)
+        lisp.print_one(ast)
     return
 
 def display_dot(rs):

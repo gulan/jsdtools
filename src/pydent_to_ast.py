@@ -5,12 +5,12 @@
 import argparse
 import sys
 
-from jsdtools.lisp import print_one
-from jsdtools.pydent import parse_one
+import jsdtools.lisp as lisp
+import jsdtools.pydent as pydent
 
 def display_lisp(source=sys.stdin):
-    ast = parse_one(source)
-    print_one(ast)
+    ast = pydent.parse_one(source)
+    lisp.print_one(ast)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

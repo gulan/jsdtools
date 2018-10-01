@@ -6,18 +6,18 @@
 import argparse
 import sys
 
-from jsdtools.lisp import parse_many
+import jsdtools.lisp as lisp
 import jsdtools.dot as dot
-from jsdtools.regex import print_one
+import jsdtools.regex as regex
 
 def dot_out(inp):
-    ast_list = [ast for ast in parse_many(inp)]
+    ast_list = [ast for ast in lisp.parse_many(inp)]
     dot.print_many(*ast_list)
 
 def regex_out(lines):
-    m = [ast for ast in parse_many(lines)]
+    m = [ast for ast in lisp.parse_many(lines)]
     for i in m:
-        print_one(i)
+        regex.print_one(i)
 
 
 if __name__ == '__main__':
