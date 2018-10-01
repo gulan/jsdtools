@@ -65,5 +65,7 @@ def print_one(ast):
     p = printer()
     walk(p, ast)
     
-def print_many(*ast):
-    raise NotImplementedError
+def print_many(*asts):
+    p = printer()
+    for ast in asts:
+        walk(p, ast)

@@ -1,14 +1,14 @@
 #!python
 
 # TBD: tree -> pydent
-# TBD: use package-level exports
 
 import argparse
 import sys
 
-from jsdtools.regex.parse import RegexParser
+import jsdtools.regex as regex
 import jsdtools.lisp as lisp
 import jsdtools.dot as dot
+import jsdtools.pydent as pydent
 
 """
 This script takes an argument string in jsp regex form. Stdin is not
@@ -76,69 +76,17 @@ elaborations and finished with a nice pdf, all from the
 command-line. Not even a text editor was used.
 """
 
-def side_by_side():
-    # TBD: move to pydent rendering, but first decouple RegexParser
-    def _aux():
-        doclist = []
-        margins = []
-        while 1:
-            try:
-                doc = (yield)
-            except GeneratorExit:
-                break
-            doclist.append(doc)
-            maxlen = max(len(m) for m in doc)
-            margins.append(maxlen)
-
-        maxhigh = max(len(m) for m in doclist)
-            
-        doclist1 = []
-        for (inx,doc) in enumerate(doclist):
-            m = margins[inx]
-            doc1 = []
-            for line in doc:
-                doc1.append(line.ljust(m))
-            short = maxhigh - len(doc)
-            for _ in range(short):
-                doc1.append(''.ljust(m))
-            doclist1.append(doc1)
-            
-        for vec in zip(*doclist1):
-            print (' | '.join(vec))
-
-    g = _aux()
-    next(g)
-    return g
-
 def display_tree(rs):
-    outputs = []
-    g = side_by_side()
-    p = RegexParser()
-    for r in rs:
-        doc = []
-        ast = p.parse(r,{})
-        for (level, _, node, name, _) in ast.walk():
-            indent = '    ' * level
-            if node == 'lit':
-                line = indent + name
-            else:
-                line = indent + node + ' ' + name + ':'
-            doc.append(line)
-        g.send(doc)
-    g.close()
-    return
+    asts = regex.parse_many(*rs)
+    pydent.print_many(*asts)
 
 def display_lisp(rs):
-    p = RegexParser()
-    for r in rs:
-        ast = p.parse(r, {})
-        lisp.print_one(ast)
-    return
+    asts = regex.parse_many(*rs)
+    lisp.print_many(*asts)
 
 def display_dot(rs):
-    p = RegexParser()
-    ast_list = [p.parse(r) for r in rs]
-    dot.print_many(*ast_list)
+    asts = regex.parse_many(*rs)
+    dot.print_many(*asts)
 
 
 if __name__ == '__main__':
