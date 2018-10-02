@@ -44,7 +44,7 @@ def side_by_side():
     return g
 
 def print_one(ast):
-    raise NotImplementedError()
+    print_many(ast)
 
 def print_many(*asts):
     

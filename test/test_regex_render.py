@@ -27,5 +27,5 @@ def test_inverse():
     assert identity('((a | b) | c)')
     assert identity('(a | (b | c))')
 
-    assert identity('a*')
-    assert identity('a**')
+    assert identity('(a*)')
+    assert identity('((a*)*)')

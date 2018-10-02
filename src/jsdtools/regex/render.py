@@ -8,6 +8,8 @@
 Reduce ast to regex form. Only Lit labels are kept.
 """
 
+import io
+import re
 import sys
 
 def printer(out=sys.stdout):
@@ -54,9 +56,21 @@ def walk(printer, ast):
         
     elif ast.ntype == 'rep':
         first = ast.child[0]
+        printer.send('(')
         walk(printer, first)
         printer.send('*')
+        printer.send(')')
                 
+def asrepr(ast):
+    def xspace(t):
+        return re.sub(r'\s', '', t)
+    sf = io.StringIO()
+    p = printer(out=sf)
+    walk(p, ast)
+    r = xspace(sf.getvalue())
+    sf.close()
+    return r
+    
 def print_one(ast):
     p = printer()
     walk(p, ast)
