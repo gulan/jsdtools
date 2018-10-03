@@ -29,7 +29,7 @@ def printer(out=sys.stdout):
     next(g)
     return g
 
-def walk(printer, ast):
+def walk(printer, ast, show_labels=False):
     if ast.ntype == 'lit':
         s = '%s' % ast.label
         printer.send(s)
@@ -38,35 +38,41 @@ def walk(printer, ast):
         children = iter(ast.child)
         printer.send('(')
         first = next(children)
-        walk(printer, first)
+        walk(printer, first, show_labels)
         for ch in children:
             printer.send(' . ')
-            walk(printer, ch)
+            walk(printer, ch, show_labels)
         printer.send(')')
+        if show_labels:
+            printer.send(':%s' % ast.label)
         
     elif ast.ntype == 'alt':
         children = iter(ast.child)
         printer.send('(')
         first = next(children)
-        walk(printer, first)
+        walk(printer, first, show_labels)
         for ch in children:
             printer.send(' | ')
-            walk(printer, ch)
+            walk(printer, ch, show_labels)
         printer.send(')')
+        if show_labels:
+            printer.send(':%s' % ast.label)
         
     elif ast.ntype == 'rep':
         first = ast.child[0]
         printer.send('(')
-        walk(printer, first)
+        walk(printer, first, show_labels)
         printer.send('*')
         printer.send(')')
+        if show_labels:
+            printer.send(':%s' % ast.label)
                 
-def asrepr(ast):
+def asrepr(ast, show_labels=True):
     def xspace(t):
         return re.sub(r'\s', '', t)
     sf = io.StringIO()
     p = printer(out=sf)
-    walk(p, ast)
+    walk(p, ast, show_labels)
     r = xspace(sf.getvalue())
     sf.close()
     return r
