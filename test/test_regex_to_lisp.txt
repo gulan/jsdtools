@@ -1,0 +1,169 @@
+>>> from jsdtools.regex import parse_many
+>>> from jsdtools.lisp import print_many
+>>> 
+>>> def regex_to_lisp(*r): return print_many(*parse_many(*r))
+>>> 
+>>> regex_to_lisp('a.b.c')
+(seq _1 [
+ (lit a )
+ (lit b )
+ (lit c )
+])
+>>> regex_to_lisp('a.b|c')
+(alt _2 [
+ (seq _1 [
+  (lit a  )
+  (lit b  )
+ ])
+ (lit c )
+])
+>>> regex_to_lisp('(a.b)|c*')
+(alt _3 [
+ (seq _1 [
+  (lit a  )
+  (lit b  )
+ ])
+ (rep _2
+  (lit c  )
+ )
+])
+>>> regex_to_lisp('a','a.b.c','a.b|c','(a.b)|c*')
+(lit a)
+(seq _1 [
+ (lit a )
+ (lit b )
+ (lit c )
+])
+(alt _2 [
+ (seq _1 [
+  (lit a  )
+  (lit b  )
+ ])
+ (lit c )
+])
+(alt _3 [
+ (seq _1 [
+  (lit a  )
+  (lit b  )
+ ])
+ (rep _2
+  (lit c  )
+ )
+])
+>>> regex_to_lisp('a','((a.b):A.c):B','(a.(b|c):C):D','((a.b):E|(c*):F):G')
+(lit a)
+(seq B [
+ (seq A [
+  (lit a  )
+  (lit b  )
+ ])
+ (lit c )
+])
+(seq D [
+ (lit a )
+ (alt C [
+  (lit b  )
+  (lit c  )
+ ])
+])
+(alt G [
+ (seq E [
+  (lit a  )
+  (lit b  )
+ ])
+ (rep F
+  (lit c  )
+ )
+])
+>>> regex_to_lisp('a','a*','a**','a***')
+(lit a)
+(rep _1
+ (lit a )
+)
+(rep _2
+ (rep _1
+  (lit a  )
+ )
+)
+(rep _3
+ (rep _2
+  (rep _1
+   (lit a   )
+  )
+ )
+)
+>>> regex_to_lisp('a','(a*):b','((a*):b*):c','(((a*):b*):c*):d')
+(lit a)
+(rep b
+ (lit a )
+)
+(rep c
+ (rep b
+  (lit a  )
+ )
+)
+(rep d
+ (rep c
+  (rep b
+   (lit a   )
+  )
+ )
+)
+>>> regex_to_lisp('y.a','(y.a*):b','((y.a*):b*):c','(((y.a*):b*):c*):d')
+(seq _1 [
+ (lit y )
+ (lit a )
+])
+(seq b [
+ (lit y )
+ (rep _1
+  (lit a  )
+ )
+])
+(rep c
+ (seq b [
+  (lit y  )
+  (rep _1
+   (lit a   )
+  )
+ ])
+)
+(rep d
+ (rep c
+  (seq b [
+   (lit y   )
+   (rep _1
+    (lit a    )
+   )
+  ])
+ )
+)
+>>> regex_to_lisp('((((leap-year . (common-year*):common-year-x3):leap-quad*):c400 . (((common-year*):common-year-x4 . ((leap-year . (common-year*):common-year-x3):leap-quad*):leap-quad-x24):c100*):c100-x3):epicycle*):forever')
+(rep forever
+ (seq epicycle [
+  (rep c400
+   (seq leap-quad [
+    (lit leap-year    )
+    (rep common-year-x3
+     (lit common-year     )
+    )
+   ])
+  )
+  (rep c100-x3
+   (seq c100 [
+    (rep common-year-x4
+     (lit common-year     )
+    )
+    (rep leap-quad-x24
+     (seq leap-quad [
+      (lit leap-year      )
+      (rep common-year-x3
+       (lit common-year       )
+      )
+     ])
+    )
+   ])
+  )
+ ])
+)
+>>> 
