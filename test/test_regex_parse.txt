@@ -1,0 +1,94 @@
+>>> from jsdtools.regex import parse_one
+>>> parse_one('a')
+(lit a)
+>>> parse_one('abc')
+(lit abc)
+>>> parse_one('a_b-c\'')
+(lit a_b-c')
+>>> parse_one('123')
+(lit 123)
+>>> parse_one('_')
+(lit _)
+>>> parse_one('-')
+(lit -)
+>>> parse_one('-end')
+(lit -end)
+>>> parse_one('a*')
+(rep _1 (lit a))
+>>> parse_one('abc*')
+(rep _1 (lit abc))
+>>> parse_one('a . b')
+(seq _1 [(lit a) (lit b)])
+>>> parse_one('a . b . c')
+(seq _1 [(lit a) (lit b) (lit c)])
+>>> parse_one('a | b')
+(alt _1 [(lit a) (lit b)])
+>>> parse_one('a | b | c')
+(alt _1 [(lit a) (lit b) (lit c)])
+>>> parse_one('a . b | c')
+(alt _2 [(seq _1 [(lit a) (lit b)]) (lit c)])
+>>> parse_one('a | b . c')
+(alt _2 [(lit a) (seq _1 [(lit b) (lit c)])])
+>>> parse_one('a* | b* . c*')
+(alt _5 [(rep _1 (lit a)) (seq _4 [(rep _2 (lit b)) (rep _3 (lit c))])])
+>>> parse_one('a* . b* | c*')
+(alt _5 [(seq _3 [(rep _1 (lit a)) (rep _2 (lit b))]) (rep _4 (lit c))])
+>>> parse_one('a* . b* . c*')
+(seq _4 [(rep _1 (lit a)) (rep _2 (lit b)) (rep _3 (lit c))])
+>>> 
+>>> parse_one('a . (b . c)')
+(seq _2 [(lit a) (seq _1 [(lit b) (lit c)])])
+>>> parse_one('(a . b) . c')
+(seq _2 [(seq _1 [(lit a) (lit b)]) (lit c)])
+>>> parse_one('a | (b | c)')
+(alt _2 [(lit a) (alt _1 [(lit b) (lit c)])])
+>>> parse_one('(a | b) | c')
+(alt _2 [(alt _1 [(lit a) (lit b)]) (lit c)])
+>>> 
+>>> parse_one('a . (b | c)')
+(seq _2 [(lit a) (alt _1 [(lit b) (lit c)])])
+>>> parse_one('(a . b) | c')
+(alt _2 [(seq _1 [(lit a) (lit b)]) (lit c)])
+>>> parse_one('(a | b) . c')
+(seq _2 [(alt _1 [(lit a) (lit b)]) (lit c)])
+>>> parse_one('a | (b . c)')
+(alt _2 [(lit a) (seq _1 [(lit b) (lit c)])])
+>>> 
+>>> parse_one('(a)')
+(lit a)
+>>> parse_one('((a))')
+(lit a)
+>>> parse_one('(a.b)')
+(seq _1 [(lit a) (lit b)])
+>>> parse_one('(a.(b))')
+(seq _1 [(lit a) (lit b)])
+>>> parse_one('(a|b)')
+(alt _1 [(lit a) (lit b)])
+>>> parse_one('(a|(b))')
+(alt _1 [(lit a) (lit b)])
+>>> parse_one('((a)*)')
+(rep _1 (lit a))
+>>>
+>>> parse_one('((a)):A').label == 'A'
+True
+>>> parse_one('((a:X)*):A').label == 'A'
+True
+>>> parse_one('((a:X).b):A').label == 'A'
+True
+>>> parse_one('(a):A').label == 'A'
+True
+>>> parse_one('(a*):A').label == 'A'
+True
+>>> parse_one('(a.b):A').label == 'A'
+True
+>>> parse_one('(a:A):B').label == 'B'
+True
+>>> parse_one('(a|(b:X)):A').label == 'A'
+True
+>>> parse_one('(a|b):A').label == 'A'
+True
+>>> parse_one('a').label == 'a'
+True
+>>> parse_one('a:A').label == 'A'
+True
+>>> 

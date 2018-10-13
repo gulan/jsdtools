@@ -1,0 +1,74 @@
+>>> from jsdtools.regex import parse_many
+>>> from jsdtools.pydent import print_many
+>>> 
+>>> def regex_to_pydent(*r): return print_many(*parse_many(*r))
+>>> 
+>>> regex_to_pydent('a')
+a
+>>> regex_to_pydent('a.b.c')
+seq _1:
+    a  
+    b  
+    c  
+>>> regex_to_pydent('a.b|c')
+alt _2:    
+    seq _1:
+        a  
+        b  
+    c      
+>>> regex_to_pydent('(a.b)|c*')
+alt _3:    
+    seq _1:
+        a  
+        b  
+    rep _2:
+        c  
+>>> regex_to_pydent('a','a.b.c','a.b|c','(a.b)|c*')
+a | seq _1: | alt _2:     | alt _3:    
+  |     a   |     seq _1: |     seq _1:
+  |     b   |         a   |         a  
+  |     c   |         b   |         b  
+  |         |     c       |     rep _2:
+  |         |             |         c  
+>>> regex_to_pydent('a','((a.b):A.c):B','(a.(b|c):C):D','((a.b):E|(c*):F):G')
+a | seq B:     | seq D:     | alt G:    
+  |     seq A: |     a      |     seq E:
+  |         a  |     alt C: |         a 
+  |         b  |         b  |         b 
+  |     c      |         c  |     rep F:
+  |            |            |         c 
+>>> regex_to_pydent('a','a*','a**','a***')
+a | rep _1: | rep _2:     | rep _3:        
+  |     a   |     rep _1: |     rep _2:    
+  |         |         a   |         rep _1:
+  |         |             |             a  
+>>> regex_to_pydent('a','(a*):b','((a*):b*):c','(((a*):b*):c*):d')
+a | rep b: | rep c:     | rep d:        
+  |     a  |     rep b: |     rep c:    
+  |        |         a  |         rep b:
+  |        |            |             a 
+>>> regex_to_pydent('y.a','(y.a*):b','((y.a*):b*):c','(((y.a*):b*):c*):d')
+seq _1: | seq b:      | rep c:          | rep d:             
+    y   |     y       |     seq b:      |     rep c:         
+    a   |     rep _1: |         y       |         seq b:     
+        |         a   |         rep _1: |             y      
+        |             |             a   |             rep _1:
+        |             |                 |                 a  
+>>> regex_to_pydent('((((leap-year . (common-year*):common-year-x3):leap-quad*):c400 . (((common-year*):common-year-x4 . ((leap-year . (common-year*):common-year-x3):leap-quad*):leap-quad-x24):c100*):c100-x3):epicycle*):forever')
+rep forever:                               
+    seq epicycle:                          
+        rep c400:                          
+            seq leap-quad:                 
+                leap-year                  
+                rep common-year-x3:        
+                    common-year            
+        rep c100-x3:                       
+            seq c100:                      
+                rep common-year-x4:        
+                    common-year            
+                rep leap-quad-x24:         
+                    seq leap-quad:         
+                        leap-year          
+                        rep common-year-x3:
+                            common-year    
+>>> 

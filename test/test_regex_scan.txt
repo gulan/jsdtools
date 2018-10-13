@@ -1,0 +1,28 @@
+>>> from jsdtools.regex import scan_one
+>>> def scan(inp): return list(scan_one(inp))
+... 
+>>> scan('abc')
+[('lit', 'abc')]
+>>> scan('a b c')
+[('lit', 'a'), ('lit', 'b'), ('lit', 'c')]
+>>> scan('abc def ghi')
+[('lit', 'abc'), ('lit', 'def'), ('lit', 'ghi')]
+>>> scan('a1 . d1* g|h1 (w . v) ')
+[('lit', 'a1'), ('dot', '.'), ('lit', 'd1'), ('star', '*'), ('lit', 'g'), ('bar', '|'), ('lit', 'h1'), ('lparen', '('), ('lit', 'w'), ('dot', '.'), ('lit', 'v'), ('rparen', ')')]
+>>> scan('.|*()')
+[('dot', '.'), ('bar', '|'), ('star', '*'), ('lparen', '('), ('rparen', ')')]
+>>> scan("A BC 2 34 D_E G-F a'")
+[('lit', 'A'), ('lit', 'BC'), ('lit', '2'), ('lit', '34'), ('lit', 'D_E'), ('lit', 'G-F'), ('lit', "a'")]
+>>> scan('a:b')
+[('lit', 'a'), ('colon', ':'), ('lit', 'b')]
+>>> scan('(a):b5')
+[('lparen', '('), ('lit', 'a'), ('rparen', ')'), ('colon', ':'), ('lit', 'b5')]
+>>> scan('a . b:Q')
+[('lit', 'a'), ('dot', '.'), ('lit', 'b'), ('colon', ':'), ('lit', 'Q')]
+>>> scan('a . b : Q')
+[('lit', 'a'), ('dot', '.'), ('lit', 'b'), ('colon', ':'), ('lit', 'Q')]
+>>> scan('(a . b) : Q')
+[('lparen', '('), ('lit', 'a'), ('dot', '.'), ('lit', 'b'), ('rparen', ')'), ('colon', ':'), ('lit', 'Q')]
+>>> scan('((a*):W | b) : Q')
+[('lparen', '('), ('lparen', '('), ('lit', 'a'), ('star', '*'), ('rparen', ')'), ('colon', ':'), ('lit', 'W'), ('bar', '|'), ('lit', 'b'), ('rparen', ')'), ('colon', ':'), ('lit', 'Q')]
+>>> 

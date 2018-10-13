@@ -72,22 +72,9 @@ digraph fig7 {
 $ jspre.py -y dot ... |dot -T pdf -o customer.pdf
 
 Note how I started from scratch, performed a sequence of small
-elaborations and finished with a nice pdf, all from the
-command-line. Not even a text editor was used.
+elaborations and finished with a pdf, all from the
+command line. Not even a text editor was used.
 """
-
-# def display_tree(rs):
-#     asts = regex.parse_many(*rs)
-#     pydent.print_many(*asts)
-
-# def display_lisp(rs):
-#     asts = regex.parse_many(*rs)
-#     lisp.print_many(*asts)
-
-# def display_dot(rs):
-#     asts = regex.parse_many(*rs)
-#     dot.print_many(*asts)
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -96,16 +83,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     asts = regex.parse_many(*args.regex)
+
+    # Note: Parsing errors are reported late due to generator-based
+    # lazy evaluation. I find this annoying.
     
     try:
         if args.syntax == 'tree':
-            # display_tree(args.regex)
             pydent.print_many(*asts)
         elif args.syntax == 'lisp':
-            # display_lisp(args.regex)
             lisp.print_many(*asts)
         elif args.syntax == 'dot':
-            # display_dot(args.regex)
             dot.print_many(*asts)
         else:
             print ("bad syntax option: %r" % args.syntax, file=sys.stderr)
