@@ -3,10 +3,10 @@
 # TBD: take Scanner invocation out of Parser
 
 from itertools import (count, cycle)
-from .. ast import (Rep, Rep1, Alt, Lit, Seq)
-from . scan import Scanner
+from .. ast import (Rep, Alt, Lit, Seq)
+from . scan import (Scanner, ScanError)
 
-class ParsingError(SyntaxError): pass
+class ParsingError(Exception): pass
 
 class Parser:
 
@@ -25,7 +25,10 @@ class Parser:
         return "_%d" % next(self.count)
     
     def advance(self):
-        self.token, self.next_token = self.next_token, next(self.G, None)
+        try:
+            self.token, self.next_token = self.next_token, next(self.G, None)
+        except ScanError as e:
+            raise ParsingError(e)
 	
     def accept(self, toktype):
         if self.next_token and self.next_token[0] == toktype:
@@ -110,8 +113,6 @@ class RegexParser(Parser):
         self.expect('rparen')
         return ast
 
-# TBD: 
-    
 def parse_one(source):
     p = RegexParser()
     return p.parse(source)

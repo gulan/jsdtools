@@ -1,0 +1,15 @@
+>>> import jsdtools.lisp as lisp
+>>> def scan(inp): return list(lisp.scan_one(inp))
+... 
+>>> import  jsdtools.lisp as lisp
+>>> lisp.parse_one('(lit abc)')
+(lit abc)
+>>> lisp.parse_one('(rep xy(lit abc))')
+(rep xy (lit abc))
+>>> lisp.parse_one('(rep A (seq B [(lit abc)]))')
+(rep A (seq B [(lit abc)]))
+>>> lisp.parse_one('(rep A (seq B [(lit abc) (lit def)]))')
+(rep A (seq B [(lit abc) (lit def)]))
+>>> lisp.parse_one('(rep A (alt B [(lit abc) (lit def)]))')
+(rep A (alt B [(lit abc) (lit def)]))
+>>> 

@@ -1,6 +1,7 @@
 #!python
 
 # TBD: children() or children_of() ?
+# TBD: provide map/filter/fold functions
 
 """
 type Label = String

@@ -1,6 +1,14 @@
 #!python
 
-# TBD: split-out scanner
+# History: This was the first concrete syntax that I wrote. Parsing it
+# was a bit easier than the indent style that I prefer. Now that I
+# also have an indent style parser, I keep this syntax as the
+# canonical form as it makes a good concrete representation of the AST.
+
+# TBD: The style of this code should be updated to look like the other
+# parser/scanners.
+
+# TBD: I will likely drop rep1.
 
 # The way I usually write it.
 """
@@ -39,6 +47,8 @@ rep customers:
 from .. ast import (Rep, Rep1, Alt, Lit, Seq)
 from .scan import scan_one
 
+class ParsingException(Exception): pass
+
 class Parser:
 
     def __init__(self, source):
@@ -49,6 +59,7 @@ class Parser:
         self.TOK = next(self.G)
 
     def expect(self, t):
+        # TBD: Too general as t is always a single character.
         m = set(t)
         self.get()
         assert self.TOK in m, 'unexpected token: {}'.format(t)
@@ -87,7 +98,9 @@ class Parser:
         return w
 
     def parse(self):
-        assert self.TOK == '(', repr(self.TOK)
+        if self.TOK != '(':
+            raise ParsingException(self.TOK)
+        # assert self.TOK == '(', repr(self.TOK)
         self.get()
         d = {'rep': self.rep,
              'rep1': self.rep1,

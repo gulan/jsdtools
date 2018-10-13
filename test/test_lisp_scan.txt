@@ -1,0 +1,16 @@
+>>> import jsdtools.lisp as lisp
+>>> def scan(inp): return list(lisp.scan_one(inp))
+... 
+>>> scan('(lit alpha)')
+['(', 'lit', 'alpha', ')', '$']
+>>> scan('(  lit   alpha  )')
+['(', 'lit', 'alpha', ')', '$']
+>>> scan('(\nlit\n\nalpha\n)')
+['(', 'lit', 'alpha', ')', '$']
+>>> scan('(seq [(lit alpha) (lit beta) (lit gamma)])')
+['(', 'seq', '[', '(', 'lit', 'alpha', ')', '(', 'lit', 'beta', ')', '(', 'lit', 'gamma', ')', ']', ')', '$']
+>>> scan('(alt [(lit alpha) (lit beta) (lit gamma)])')
+['(', 'alt', '[', '(', 'lit', 'alpha', ')', '(', 'lit', 'beta', ')', '(', 'lit', 'gamma', ')', ']', ')', '$']
+>>> scan('(rep (lit alpha))')
+['(', 'rep', '(', 'lit', 'alpha', ')', ')', '$']
+>>> 

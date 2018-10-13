@@ -69,4 +69,4 @@ def demo():
     see('((a*):W | b) : Q')
 
 def scan_one(source):
-    raise NotImplementedError
+    return Scanner(source)

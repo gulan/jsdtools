@@ -1,5 +1,7 @@
 #!python
 
+# TBD: ParsingError tests
+
 from jsdtools.ast import (Lit, Seq, Alt, Rep)
 from jsdtools.regex.parse import (ParsingError, RegexParser)
 
