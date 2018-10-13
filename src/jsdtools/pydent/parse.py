@@ -1,7 +1,5 @@
 #!python
 
-# TBD: code in jspre goes to render.
-
 import sys
 
 from itertools import count

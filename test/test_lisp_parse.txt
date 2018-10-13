@@ -1,7 +1,6 @@
 >>> import jsdtools.lisp as lisp
 >>> def scan(inp): return list(lisp.scan_one(inp))
 ... 
->>> import  jsdtools.lisp as lisp
 >>> lisp.parse_one('(lit abc)')
 (lit abc)
 >>> lisp.parse_one('(rep xy(lit abc))')

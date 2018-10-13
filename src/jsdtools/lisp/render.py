@@ -7,8 +7,6 @@
 Serialize the ast to the lisp-like form of jsp.
 """
 
-import sys
-
 def printer():
     def aux():
         indent = 0

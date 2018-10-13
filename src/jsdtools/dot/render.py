@@ -1,7 +1,5 @@
 #!python
 
-# TBD: disentagle print_one and print_many
-
 import sys
 
 _subdict = {
