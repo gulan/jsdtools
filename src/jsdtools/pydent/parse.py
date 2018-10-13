@@ -4,6 +4,7 @@
 
 import sys
 
+from itertools import count
 from .. ast import (Rep, Alt, Lit, Seq)
 from .scan import scan_one
 
@@ -11,6 +12,9 @@ class ParsingError(SyntaxError): pass
 
 class Parser:
 
+    def __init__(self):
+        self.gensn = count(start=100)
+    
     def parse(self, source):
         self.G = source
         self.token = self.next_token = None
@@ -56,7 +60,7 @@ class PyformParser(Parser):
         return ast
 
     def lit(self):
-        return Lit(self.token[1])
+        return Lit(self.token[1], next(self.gensn))
     
     def seq(self):
         self.advance()
@@ -67,7 +71,7 @@ class PyformParser(Parser):
         while not self.accept('dedent'):
             ast = self.tree()
             m.append(ast)
-        ast = Seq(name)
+        ast = Seq(name, next(self.gensn))
         for s in m:
             ast.add_child(s)
         return ast
@@ -81,7 +85,7 @@ class PyformParser(Parser):
         while not self.accept('dedent'):
             ast = self.tree()
             m.append(ast)
-        ast = Alt(name)
+        ast = Alt(name, next(self.gensn))
         for s in m:
             ast.add_child(s)
         return ast
@@ -93,7 +97,7 @@ class PyformParser(Parser):
         self.expect('indent')
         s = self.tree()
         self.expect('dedent')
-        ast = Rep(name)
+        ast = Rep(name, next(self.gensn))
         ast.add_child(s)
         return ast
 

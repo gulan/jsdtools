@@ -1,0 +1,114 @@
+>>> import jsdtools.dot as dot
+>>> import jsdtools.regex as regex
+>>>
+>>> dot.print_many(regex.parse_one('(a.b.c)'))
+digraph fig7 {
+  node [shape=rect]
+  edge [dir=none]
+  subgraph compound1 {
+    103 [label="_1"]
+    100 [label=".\ra"]
+    101 [label=".\rb"]
+    102 [label=".\rc"]
+    103 -> {100 101 102}
+  }
+}
+>>> dot.print_many(regex.parse_one('((a.b).c)'))
+digraph fig7 {
+  node [shape=rect]
+  edge [dir=none]
+  subgraph compound1 {
+    104 [label="_2"]
+    102 [label=".\r_1"]
+    100 [label=".\ra"]
+    101 [label=".\rb"]
+    103 [label=".\rc"]
+    102 -> {100 101}
+    104 -> {102 103}
+  }
+}
+>>> dot.print_many(regex.parse_one('(a.(b.c))'))
+digraph fig7 {
+  node [shape=rect]
+  edge [dir=none]
+  subgraph compound1 {
+    104 [label="_2"]
+    100 [label=".\ra"]
+    103 [label=".\r_1"]
+    101 [label=".\rb"]
+    102 [label=".\rc"]
+    103 -> {101 102}
+    104 -> {100 103}
+  }
+}
+>>> dot.print_many(regex.parse_one('(a.(b.c):A):B'))
+digraph fig7 {
+  node [shape=rect]
+  edge [dir=none]
+  subgraph compound1 {
+    104 [label="B"]
+    100 [label=".\ra"]
+    103 [label=".\rA"]
+    101 [label=".\rb"]
+    102 [label=".\rc"]
+    103 -> {101 102}
+    104 -> {100 103}
+  }
+}
+>>> dot.print_many(regex.parse_one( '(a|b|c)' ))
+digraph fig7 {
+  node [shape=rect]
+  edge [dir=none]
+  subgraph compound1 {
+    103 [label="_1"]
+    100 [label="o\ra"]
+    101 [label="o\rb"]
+    102 [label="o\rc"]
+    103 -> {100 101 102}
+  }
+}
+>>> 
+>>> dot.print_many(*regex.parse_many('a.b', 'c|d*', 'a.a**.a***', '(a|b|c):Z'))
+digraph fig7 {
+  node [shape=rect]
+  edge [dir=none]
+  subgraph compound1 {
+    102 [label="_1"]
+    100 [label=".\ra"]
+    101 [label=".\rb"]
+    102 -> {100 101}
+  }
+  subgraph compound2 {
+    106 [label="_2"]
+    103 [label="o\rc"]
+    105 [label="o\r_1"]
+    104 [label="*\rd"]
+    105 -> {104}
+    106 -> {103 105}
+  }
+  subgraph compound3 {
+    115 [label="_6"]
+    107 [label=".\ra"]
+    110 [label=".\r_2"]
+    109 [label="*\r_1"]
+    108 [label="*\ra"]
+    114 [label=".\r_5"]
+    113 [label="*\r_4"]
+    112 [label="*\r_3"]
+    111 [label="*\ra"]
+    109 -> {108}
+    110 -> {109}
+    112 -> {111}
+    113 -> {112}
+    114 -> {113}
+    115 -> {107 110 114}
+  }
+  subgraph compound4 {
+    119 [label="Z"]
+    116 [label="o\ra"]
+    117 [label="o\rb"]
+    118 [label="o\rc"]
+    119 -> {116 117 118}
+  }
+}
+>>> 

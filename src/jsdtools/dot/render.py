@@ -52,7 +52,7 @@ def mkdot(target, cluster=False):
 def mkprinter(out=sys.stdout):
     def _aux():
         while 1:
-            print ((yield), file=out, end='')
+            print ((yield), end='')
     printer = _aux()
     next(printer)
     return printer

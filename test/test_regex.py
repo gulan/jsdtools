@@ -35,7 +35,6 @@ texprs = """(a|b|c|d|e|f)
 ((((a*)|b)*)|(c*))
 ((((a*).b)*).(c*))""".split('\n')
 
-import jsdtools.ast as ast
 import jsdtools.dot as dot
 import jsdtools.lisp as lisp
 import jsdtools.pydent as pydent

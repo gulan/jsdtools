@@ -29,13 +29,13 @@ duplication than hiding the implementation.
 
 """
 
-def mkseqno():
-    n = 10
-    while 1:
-        yield n
-        n += 1
+# def mkseqno():
+#     n = 10
+#     while 1:
+#         yield n
+#         n += 1
 
-seqno = mkseqno()
+# seqno = mkseqno()
 
 class Abstract:
     
@@ -46,11 +46,12 @@ class Abstract:
     # TBD: move out the __init__ as it is particular to the implementation.
     """
     
-    def __init__(self, label):
+    def __init__(self, label, sn):
         self.child = []
         self.label = label    # string type
         self.ntype = self.__class__.__name__.lower()
-        self.sn = next(seqno)
+        # self.sn = next(seqno)
+        self.sn = sn
 
     def __repr__(self): raise NotImplemented
 
@@ -186,33 +187,3 @@ class Alt(Compound):
 
     def children(self): return ' '.join(repr(c) for c in self.child)
 
-def demo():
-    p = Lit('alpha')
-    
-    q = Seq('seq1')
-    q.add_child(Lit('alpha'))
-    q.add_child(Lit('beta'))
-    q.add_child(Lit('gamma'))
-    
-    r = Alt('alt1')
-    r.add_child(Lit('alpha'))
-    r.add_child(Lit('beta'))
-    r.add_child(Lit('gamma'))
-    
-    s = Rep('repX')
-    s.add_child(Lit('alpha'))
-    
-    print (p.labels())
-    print (q.labels())
-    print (r.labels())
-    print (s.labels())
-    print ('-' * 40)
-    print (p.anno())
-    print (q.anno())
-    print (r.anno())
-    print (s.anno())
-    print ('-' * 40)
-    print (p.graph())
-    print (q.graph())
-    print (r.graph())
-    print (s.graph())

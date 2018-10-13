@@ -10,6 +10,9 @@ class ParsingError(Exception): pass
 
 class Parser:
 
+    def __init__(self):
+        self.gensn = count(start=100)
+    
     def parse(self, source, test_counter = False):
         # print('------------  %s  ------------' % source)
         self.G = Scanner(source)
@@ -63,7 +66,7 @@ class RegexParser(Parser):
             ast = self.seq()
             m.append(ast)
         if len(m) > 1:
-            n = Alt(self.name())
+            n = Alt(self.name(), next(self.gensn))
             for i in m:
                 n.add_child(i)
             return n
@@ -78,7 +81,7 @@ class RegexParser(Parser):
             ast = self.rep()
             m.append(ast)
         if len(m) > 1:
-            n = Seq(self.name())
+            n = Seq(self.name(), next(self.gensn))
             for i in m:
                 n.add_child(i)
             return n
@@ -88,7 +91,7 @@ class RegexParser(Parser):
     def rep(self):
         ast = self.trm()
         while self.accept('star'):
-            ast1 = Rep(self.name())
+            ast1 = Rep(self.name(), next(self.gensn))
             ast1.add_child(ast)
             ast = ast1
         return ast
@@ -103,7 +106,7 @@ class RegexParser(Parser):
         
     def exp(self):
         if self.accept('lit'):
-            return Lit(self.token[1])
+            return Lit(self.token[1], next(self.gensn))
         else:
             return self.sub()
         

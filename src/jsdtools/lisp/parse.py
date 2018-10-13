@@ -44,6 +44,7 @@ rep customers:
     LIT = 'lit' . LITERAL'
 """
 
+from itertools import count
 from .. ast import (Rep, Rep1, Alt, Lit, Seq)
 from .scan import scan_one
 
@@ -54,7 +55,8 @@ class Parser:
     def __init__(self, source):
         self.G = source         # stream of tokens
         self.TOK = None
-
+        self.gensn = count(start=100)
+    
     def get(self):
         self.TOK = next(self.G)
 
@@ -64,22 +66,22 @@ class Parser:
         self.get()
         assert self.TOK in m, 'unexpected token: {}'.format(t)
 
-    def lit(self): return Lit(self.TOK)
+    def lit(self): return Lit(self.TOK, next(self.gensn))
 
     def rep(self):
-        w = Rep(self.TOK)
+        w = Rep(self.TOK, next(self.gensn))
         self.get()
         w.add_child(self.parse())
         return w
 
     def rep1(self):
-        w = Rep1(self.TOK)
+        w = Rep1(self.TOK, next(self.gensn))
         self.get()
         w.add_child(self.parse())
         return w
 
     def seq(self):
-        w = Seq(self.TOK)
+        w = Seq(self.TOK, next(self.gensn))
         self.expect('[')
         self.get()
         while self.TOK != ']':
@@ -88,7 +90,7 @@ class Parser:
         return w
 
     def alt(self):
-        w = Alt(self.TOK)
+        w = Alt(self.TOK, next(self.gensn))
         self.expect('[')
         self.get()
         assert self.TOK in set('(]'), "TOK=%r" % self.TOK
