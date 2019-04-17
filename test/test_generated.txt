@@ -1,0 +1,251 @@
+>>> from jsdtools import *
+>>> pydent.print_one(regex.parse_one('(a|b|c|d|e|f)'))
+alt _1:
+    a  
+    b  
+    c  
+    d  
+    e  
+    f  
+>>> pydent.print_one(regex.parse_one('(a|b)'))
+alt _1:
+    a  
+    b  
+>>> pydent.print_one(regex.parse_one('(a|(b|(c|(d|(e|f)))))'))
+alt _5:                
+    a                  
+    alt _4:            
+        b              
+        alt _3:        
+            c          
+            alt _2:    
+                d      
+                alt _1:
+                    e  
+                    f  
+>>> pydent.print_one(regex.parse_one('(a|(b.c))'))
+alt _2:    
+    a      
+    seq _1:
+        b  
+        c  
+>>> pydent.print_one(regex.parse_one('(a|(b*)|c)'))
+alt _2:    
+    a      
+    rep _1:
+        b  
+    c      
+>>> pydent.print_one(regex.parse_one('(a|((b*)*)|c)'))
+alt _3:        
+    a          
+    rep _2:    
+        rep _1:
+            b  
+    c          
+>>> pydent.print_one(regex.parse_one('(a.b.c.d.e.f)'))
+seq _1:
+    a  
+    b  
+    c  
+    d  
+    e  
+    f  
+>>> pydent.print_one(regex.parse_one('(a.b)'))
+seq _1:
+    a  
+    b  
+>>> pydent.print_one(regex.parse_one('(a.(b|c))'))
+seq _2:    
+    a      
+    alt _1:
+        b  
+        c  
+>>> pydent.print_one(regex.parse_one('(a.(b.(c.(d.(e.f)))))'))
+seq _5:                
+    a                  
+    seq _4:            
+        b              
+        seq _3:        
+            c          
+            seq _2:    
+                d      
+                seq _1:
+                    e  
+                    f  
+>>> pydent.print_one(regex.parse_one('(a.(b*).c)'))
+seq _2:    
+    a      
+    rep _1:
+        b  
+    c      
+>>> pydent.print_one(regex.parse_one('(a.((b*)*).c)'))
+seq _3:        
+    a          
+    rep _2:    
+        rep _1:
+            b  
+    c          
+>>> pydent.print_one(regex.parse_one('(a*)'))
+rep _1:
+    a  
+>>> pydent.print_one(regex.parse_one('((a|b|c)|(d|e|f))'))
+alt _3:    
+    alt _1:
+        a  
+        b  
+        c  
+    alt _2:
+        d  
+        e  
+        f  
+>>> pydent.print_one(regex.parse_one('((a|b|c)*)'))
+rep _2:    
+    alt _1:
+        a  
+        b  
+        c  
+>>> pydent.print_one(regex.parse_one('((a|b).c)'))
+seq _2:    
+    alt _1:
+        a  
+        b  
+    c      
+>>> pydent.print_one(regex.parse_one('((a.b.c).(d.e.f))'))
+seq _3:    
+    seq _1:
+        a  
+        b  
+        c  
+    seq _2:
+        d  
+        e  
+        f  
+>>> pydent.print_one(regex.parse_one('((a.b.c)*)'))
+rep _2:    
+    seq _1:
+        a  
+        b  
+        c  
+>>> pydent.print_one(regex.parse_one('((a.b)|c)'))
+alt _2:    
+    seq _1:
+        a  
+        b  
+    c      
+>>> pydent.print_one(regex.parse_one('((a*)|b|c)'))
+alt _2:    
+    rep _1:
+        a  
+    b      
+    c      
+>>> pydent.print_one(regex.parse_one('((a*)|(b*)|(c*))'))
+alt _4:    
+    rep _1:
+        a  
+    rep _2:
+        b  
+    rep _3:
+        c  
+>>> pydent.print_one(regex.parse_one('((a*).b.c)'))
+seq _2:    
+    rep _1:
+        a  
+    b      
+    c      
+>>> pydent.print_one(regex.parse_one('((a*).(b*).(c*))'))
+seq _4:    
+    rep _1:
+        a  
+    rep _2:
+        b  
+    rep _3:
+        c  
+>>> pydent.print_one(regex.parse_one('((a*)*)'))
+rep _2:    
+    rep _1:
+        a  
+>>> pydent.print_one(regex.parse_one('(((a|b)*)|c)'))
+alt _3:        
+    rep _2:    
+        alt _1:
+            a  
+            b  
+    c          
+>>> pydent.print_one(regex.parse_one('(((a|b)*)|(c*))'))
+alt _4:        
+    rep _2:    
+        alt _1:
+            a  
+            b  
+    rep _3:    
+        c      
+>>> pydent.print_one(regex.parse_one('(((a.b)*).c)'))
+seq _3:        
+    rep _2:    
+        seq _1:
+            a  
+            b  
+    c          
+>>> pydent.print_one(regex.parse_one('(((a.b)*).(c*))'))
+seq _4:        
+    rep _2:    
+        seq _1:
+            a  
+            b  
+    rep _3:    
+        c      
+>>> pydent.print_one(regex.parse_one('(((a*)*)|b|c)'))
+alt _3:        
+    rep _2:    
+        rep _1:
+            a  
+    b          
+    c          
+>>> pydent.print_one(regex.parse_one('(((a*)*)|((b*)*)|((c*)*))'))
+alt _7:        
+    rep _2:    
+        rep _1:
+            a  
+    rep _4:    
+        rep _3:
+            b  
+    rep _6:    
+        rep _5:
+            c  
+>>> pydent.print_one(regex.parse_one('(((a*)*).b.c)'))
+seq _3:        
+    rep _2:    
+        rep _1:
+            a  
+    b          
+    c          
+>>> pydent.print_one(regex.parse_one('(((a*)*).((b*)*).((c*)*))'))
+seq _7:        
+    rep _2:    
+        rep _1:
+            a  
+    rep _4:    
+        rep _3:
+            b  
+    rep _6:    
+        rep _5:
+            c  
+>>> pydent.print_one(regex.parse_one('((((a*)|b)*)|(c*))'))
+alt _5:            
+    rep _3:        
+        alt _2:    
+            rep _1:
+                a  
+            b      
+    rep _4:        
+        c          
+>>> pydent.print_one(regex.parse_one('((((a*).b)*).(c*))'))
+seq _5:            
+    rep _3:        
+        seq _2:    
+            rep _1:
+                a  
+            b      
+    rep _4:        
+        c          
+>>> 

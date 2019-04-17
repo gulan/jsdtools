@@ -15,7 +15,7 @@ symbol or literal terminal. Since the method requires that every node
 in the tree have a name, nested regular expressions are not adequate. I
 can rewrite the above using regular grammar as ::
 
-     account ::= invest + activity + terminate
+    account ::= invest + activity + terminate
     activity ::= movement*
     movement ::= payin | withdraw
 
@@ -76,5 +76,7 @@ See the docstring in jspre.py for details.
 
 References
 ----------
-| Jackson, M. A. (1975). Principles of Program Design. Academic Press, 1975
 | https://en.wikipedia.org/wiki/Michael_A._Jackson
+| M.A. Jackson, "Principles of Program Design" Academic Press, 1975
+| M.J. King and J.P. Pardoe, "Program Design Using JSP, A Practical Introduction", Macmillan Publishers LTD, 1985
+

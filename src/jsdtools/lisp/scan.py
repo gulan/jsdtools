@@ -1,5 +1,7 @@
 #!python
 
+# Lisp scanner
+
 # TBD: I should further restrict the valid character set for
 # words. Control characters should be disallowed for example.
 
@@ -8,11 +10,10 @@ import re
 PUNCT = ['(', ')', '[', ']']
 
 def Scanner(inp):
-    # Convert `inp` string to sequence of tokens
+    # Convert `inp` strings to sequence of tokens
     
     def filter_comments(text):
-        return ''.join(m for m in text
-                       if not m.startswith('#') and not m.startswith(';'))
+        return ''.join(m for m in text if not re.match(r'#|;', m))
 
     def squeeze_whitespace(s):
         s = s.replace('\t',' ')
@@ -39,7 +40,21 @@ def Scanner(inp):
     yield '$'
 
 def scan_one(inp):
+    assert isinstance(inp, str)
+    
     # The input can have several complete lisp expressions concatented
     # together. That works fine. A scan_many() function is not
     # provided as it would be redundant and confusing.
+    
+    ## Actually, parsing many docs with scan_one is confusing.
     return Scanner(inp)
+
+def demo():
+    p0 = "(abc) (d) ((efgh) () (ijklmnopq))"
+    p1 = "(abc) (d)\n ((efgh) () (ijklmnopq))\n"
+    p2 = "((abc) (d))\n ((efgh) () (ijklmnopq))"
+    for i in scan_one(p2):
+        print(i)
+
+if __name__ == '__main__':
+    demo()

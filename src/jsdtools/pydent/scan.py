@@ -1,13 +1,18 @@
 #!python
 
+# pyindent scan 
 # TDB: get rid of global var
 
 """
+The input is iterator yielding lines from a single pyindent form. Each
+line is tokenised independently, except keeping track of the
+indentation.
+
 For the scanner, a line begins with 0+ indents.
 It continues with either one word and a newline, or
 two words, a colon and a newline.
 
-An indent is exactly four spaces.
+An indent in the source is exactly four spaces.
 
 Dedent tokens are generated as needed.
 """
@@ -17,6 +22,7 @@ import sys
 
 class TokenError(Exception): pass
 
+KW = ('seq', 'alt', 'rep')
 level = 0
 
 def tokenize(line):
@@ -30,6 +36,8 @@ def tokenize(line):
     if c > level:
         level += 1
         yield ('indent', '')
+    # A deeply nested structure can drop several levels of indentation
+    # with a single line.
     elif c < level:
         drop = level - c
         level = c
@@ -38,15 +46,16 @@ def tokenize(line):
     
     words = [w for w in re.split(r'\s+', more) if w != '']
 
+    # There might be a space before ':'
     if len(words) == 3:
-        if words[0] in ('seq', 'alt', 'rep') and words[2] == ':':
+        if words[0] in KW and words[2] == ':':
             yield (words[0], '')
             yield ('lit', words[1])
             yield ('colon', ':')
         else:
             raise TokenError('bad line: %r' % line)
     elif len(words) == 2:
-        if words[0] in ('seq', 'alt', 'rep') and words[1].endswith(':'):
+        if words[0] in KW and words[1].endswith(':'):
             yield (words[0], '')
             yield ('lit', words[1][:-1])
             yield ('colon', ':')
@@ -58,6 +67,8 @@ def tokenize(line):
         raise TokenError('too many tokens: %r' % line)
 
 def scan_one(source=sys.stdin):
+    # source is an iterator of strings
+    # the strings comprise one document
     global level
     for line in source:
         for tk in tokenize(line):

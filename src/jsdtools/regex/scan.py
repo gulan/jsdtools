@@ -1,5 +1,7 @@
 #!python
 
+# regex scanner
+
 import re
 import string
 
@@ -16,12 +18,13 @@ VALID = PUNCT | CHARS
    
 class ScanError(Exception): pass
 
-def Scanner(inp):
+def Scanner(source):
 
     def squeeze_blanks(s):
         return re.sub(r'\s+', ' ', s) # leave a space
-    
-    K = iter(squeeze_blanks(inp))
+
+    # s = ''.join(source)
+    K = iter(squeeze_blanks(source))
 
     def read():
         t = next(K, None)
@@ -47,5 +50,6 @@ def Scanner(inp):
             t = read()
         yield ('lit', word)
 
-def scan_one(source):
-    return Scanner(source)
+def scan_one(text):
+    assert isinstance(text, str)
+    return Scanner(text)
