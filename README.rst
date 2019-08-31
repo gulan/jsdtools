@@ -24,56 +24,49 @@ it is meant to describe full grammars, which are too powerful for my
 needs. I do not want to put all names into the global scope and I do
 not need recursive definitions.
 
-To make my hand-written parser quick and easy to write, I started with
-a very simple syntax based on LISP. The actual input to my program is
+I chose a python-like syntax to represent the same regular expression.
 ::
 
-    (seq account [
-        (lit invest)
-        (rep activity
-            (alt movement [
-                (lit payin)
-                (lit withdraw)]))
-        (lit terminate)])
+    seq account:
+        invest
+        rep activity:
+            alt movement:
+                payin
+                withdraw
+        terminate
 
-If the input file is `account.jsd`, the program from the command line
-can be run as ::
+If this structure is in a file called `account.jsd`. A diagram may be
+generated with
+::
 
-    $ astjsd.py < account.jsd
-
-This will write a Graphviz dot file to stdout, which may in turn be
-used to create a graphic representation of the tree ::
-
-    $ astjsd.py < account.jsd | dot -T pdf >account.pdf
+    $ jsp_syntax.py -y pydent -z dot < account.jsd >account.dot
+    $ dot -T pdf >account.pdf
     $ evince account.pdf &
 
 .. image:: example/account/account.gif
 
-The regular expression form of account.jsd can be recovered by ::
+JSP is a method for designing sequential processes. In brief, the
+steps are
 
-    $ astjsd.py -y regex <example/account/account.jsd 
-    (invest . (payin | withdraw)* . terminate)
+1. Describe all input and output streams as regular expressions,
+   biased towards the problem being solved.
 
-This regex form makes it easier to see the underlying structure. I can
-also start with the regex syntax to build the LISP form ::
+2. Unify these regular expressions, if possible, resulting in the
+   program structure. Unification is not possible when there is a
+   structure clash. It may be resolved by implementing
+   coroutines. (See references).
 
-    $ jspre.py -y lisp \
-      '(invest . ((payin | withdraw):movement*):activity . terminate):account'
+3. List the program statements in no particular order.
+
+4. For each statement, find where it belongs in the program structure
+   and attach it.
+
+5. Convert the resulting program schema to real code.
+           
+Eventually, jsdtool will aid in steps 1-4. Currently it can only help
+with step 1, but that is where is is most useful as creating the
+diagrams by hand is tedious.
    
-    (seq account [
-        (lit invest )
-        (rep activity
-        (alt movement [
-            (lit payin)
-            (lit withdraw)]))
-    (lit terminate)])
-
-    $ jspre.py -y dot \
-      '(invest . ((payin|withdraw):movement*):activity . terminate):account' |\
-      dot -Tpdf -o xxx.pdf    
-
-See the docstring in jspre.py for details.
-
 References
 ----------
 | https://en.wikipedia.org/wiki/Michael_A._Jackson

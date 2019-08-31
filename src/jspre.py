@@ -22,7 +22,7 @@ Example of Iterative Refinement
 
 (1) describe the lifetime of a single customer bank account with an
 easy-to-type regular expression. The resulting python-like tree
-should be easy to read.
+('pydent') should be easy to read.
 
 $ jspre.py '(invest . (pay-in | withdraw)* . terminate)'
 
@@ -35,6 +35,10 @@ $ jspre.py '(invest . (pay-in | withdraw)* . terminate)'
      terminate
 
 (2) Supply more labels to replace the generated _1, _2 and _3.
+
+To label some expression x, replace it with (x):my-label. It is a
+little ugly, but easy to do with a little practice. For larger
+structures, we can just write the 'pydent' form ourselves.
 
 $ jspre.py '(invest . ((pay-in | withdraw):movement*):activity . terminate):customer'
 

@@ -10,13 +10,12 @@ import jsdtools.lisp as lisp
 import jsdtools.dot as dot
 import jsdtools.regex as regex
 
-def dot_out(inp):
-    ast_list = [ast for ast in lisp.parse_many(inp)]
+def dot_out(text):
+    ast_list = list(lisp.parse_many(text))
     dot.print_many(*ast_list)
 
-def regex_out(lines):
-    m = [ast for ast in lisp.parse_many(lines)]
-    for i in m:
+def regex_out(text):
+    for i in lisp.parse_many(text):
         regex.print_one(i)
 
 
@@ -25,14 +24,18 @@ if __name__ == '__main__':
     parser.add_argument('-y', '--syntax', default='dot')
     args = parser.parse_args()
     if args.syntax == 'dot':
-        lines = sys.stdin.readlines()
-        dot_out(lines)
+        text = sys.stdin.read()
+        dot_out(text)
     elif args.syntax == 'regex':
-        lines = sys.stdin.readlines()
-        regex_out(lines)
+        text = sys.stdin.read()
+        regex_out(text)
     else:
         print ("bad syntax option: %r" % args.syntax, file=sys.stderr)
         sys.exit(-1)
+    sys.exit(0)
     
 
-# cat example/account/account.jsd |./astjsd.py |dot -T pdf >/tmp/account.pdf ; evince /tmp/account.pdf
+# python astjsd.py -y dot   <../example/all.jsd
+# python astjsd.py -y regex <../example/all.jsd
+
+# |dot -T pdf >all.pdf ; evince all.pdf

@@ -15,4 +15,5 @@ my_*
 *.dot
 .pytest_cache/
 .arc
-
+.inc
+XXX*.*

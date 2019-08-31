@@ -123,6 +123,7 @@ def parse_one(inp):
     return p.parse()
 
 def parse_many(inp):
+    # list(jsdtools.lisp.parse_many(open('inp.lisp').read()))
     tokens = scan_one(inp)
     p = Parser(tokens)
     p.get()
