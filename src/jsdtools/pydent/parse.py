@@ -34,6 +34,9 @@ class Parser:
         if not self.accept(t):
             raise ParsingError('Expected ' + t)
 
+    def start(self):
+        raise NotImplemented
+
 class PyformParser(Parser):
     """    
     tree := (lit | seq | alt | rep)
@@ -106,5 +109,5 @@ def parse_one(source=sys.stdin):
     return ast
 
 def parse_many(source=sys.stdin):
-    raise NotIMplementedError
+    raise NotImplementedError
 

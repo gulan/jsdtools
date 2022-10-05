@@ -11,16 +11,16 @@ these events. ::
 Micheal Jackson's early work (1975) made no reference to regular
 expressions, and recommended drawing tree diagrams instead. Each node
 in the tree is either a sequence, an alternation, a repetition or a
-symbol or literal terminal. Since the method requires that every node
-in the tree have a name, nested regular expressions are not adequate. I
-can rewrite the above using regular grammar as ::
+symbol or literal. Since the method requires that every node in the
+tree have a name, nested regular expressions are not adequate. I can
+rewrite the above using regular grammar as ::
 
     account ::= invest + activity + terminate
     activity ::= movement*
     movement ::= payin | withdraw
 
-This BNF description lets me give a name to every subexpression, but
-it is meant to describe full grammars, which are too powerful for my
+This BNF description lets gives a name to every subexpression, but it
+is meant to describe full grammars, which are too powerful for my
 needs. I do not want to put all names into the global scope and I do
 not need recursive definitions.
 
@@ -62,11 +62,11 @@ steps are
    and attach it.
 
 5. Convert the resulting program schema to real code.
-           
+
 Eventually, jsdtool will aid in steps 1-4. Currently it can only help
-with step 1, but that is where is is most useful as creating the
+with step 1, but that is where it is most useful since creating the
 diagrams by hand is tedious.
-   
+
 References
 ----------
 | https://en.wikipedia.org/wiki/Michael_A._Jackson
